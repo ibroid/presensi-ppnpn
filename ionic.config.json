@@ -1,0 +1,8 @@
+{
+  "name": "Presensi PPNPN",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "react",
+  "id": "e60c8cd4"
+}
