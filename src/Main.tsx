@@ -1,11 +1,10 @@
-import { Route } from 'react-router-dom';
+import { Redirect, Route } from 'react-router-dom';
 import {
 	IonApp,
 	IonRouterOutlet,
 	setupIonicReact
 } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
-import Auth from './pages/Auth';
 
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/react/css/core.css';
@@ -36,7 +35,9 @@ const Main: React.FC = () => {
 		<IonApp>
 			<IonReactRouter>
 				<IonRouterOutlet>
-					<Route exact path="/" component={Auth} />
+					<Route exact path="/">
+						<Redirect to='/app' />
+					</Route>
 					<Route path="/app" component={Tabs} />
 				</IonRouterOutlet>
 			</IonReactRouter>

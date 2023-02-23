@@ -10,7 +10,7 @@ import { Redirect, Route } from "react-router";
 import Tab1 from "./Tab1";
 import Tab2 from "./Tab2";
 import Tab3 from "./Tab3";
-import { calendar, personCircle, location } from "ionicons/icons";
+import { calendar, location, statsChart } from "ionicons/icons";
 import Details from "./Details";
 
 
@@ -27,7 +27,7 @@ const Tabs: React.FC = () => {
 				</Route>
 			</IonRouterOutlet>
 
-			<IonTabBar slot="bottom">
+			<IonTabBar slot="bottom" color={'tertiary'}>
 				<IonTabButton tab="tab1" href="/app/tab1">
 					<IonIcon icon={location} />
 					<IonLabel>Presensi</IonLabel>
@@ -39,8 +39,8 @@ const Tabs: React.FC = () => {
 				</IonTabButton>
 
 				<IonTabButton tab="tab3" href="/app/tab3">
-					<IonIcon icon={personCircle} />
-					<IonLabel>Profil</IonLabel>
+					<IonIcon icon={statsChart} />
+					<IonLabel>Statistic</IonLabel>
 				</IonTabButton>
 			</IonTabBar>
 		</IonTabs>

@@ -13,7 +13,7 @@ import {
 	IonRow,
 	IonText,
 	IonToolbar,
-	useIonViewDidEnter,
+	// useIonViewDidEnter,
 	useIonLoading,
 	useIonRouter
 } from "@ionic/react";
@@ -50,6 +50,7 @@ const Auth: React.FC = () => {
 		try {
 			await supabase.from('ppnpn').select('*')
 			const { data, error } = await supabase.auth.signInWithPassword({ phone, password: 'kuyabatok' });
+
 			if (error) {
 				throw new Error(error.message);
 			}
