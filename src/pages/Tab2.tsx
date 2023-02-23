@@ -8,26 +8,21 @@ const Tab2: React.FC = () => {
   return (
     <IonPage>
       <IonHeader>
-        <IonToolbar>
+        <IonToolbar color={'tertiary'}>
           <IonTitle>Riwayat Presensi</IonTitle>
         </IonToolbar>
       </IonHeader>
       <IonContent fullscreen>
-        <IonHeader collapse="condense">
-          <IonToolbar>
-            <IonTitle size="large">Riwayat Presensi</IonTitle>
-          </IonToolbar>
-        </IonHeader>
         <IonGrid>
-          <IonRow class="ion-margin">
+          <IonRow class="ion-margin-top ion-justify-content-center ion-align-items-center">
             <IonDatetime color={"primary"} showDefaultTimeLabel={false}></IonDatetime>
           </IonRow>
-          <IonRow class="ion-margin">
-            <h4>Daftar Presensi Tanggal Sekian</h4>
+          <IonRow>
+            <h4>Daftar Presensi Hari Ini</h4>
           </IonRow>
         </IonGrid>
         <Virtuoso
-          style={{ height: '100%' }}
+          style={{ height: '50%' }}
           data={[
             'Imal',
             'Adi',
@@ -40,6 +35,13 @@ const Tab2: React.FC = () => {
             'Yanti',
             'Aldi',
             'Samsuri',
+            'Aldi',
+            'Yanto',
+            'Abdullah',
+            'Ade',
+            'Oci',
+            'Syahril',
+            'Chakra',
           ]}
           itemContent={(index, data) => {
             return (
