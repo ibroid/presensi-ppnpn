@@ -22,4 +22,5 @@ export interface IPresensiResponse {
     tanggal: string;
     updated_at: null | string;
     waktu: string;
+    jenis: 1 | 2 | 3
 }

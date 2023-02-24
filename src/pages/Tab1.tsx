@@ -1,4 +1,4 @@
-import { IonAvatar, IonButton, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonCol, IonContent, IonGrid, IonHeader, IonIcon, IonImg, IonItem, IonItemDivider, IonLabel, IonList, IonPage, IonRow, IonSelect, IonSelectOption, IonText, IonTitle, IonToolbar, ToastOptions, useIonActionSheet, useIonAlert, useIonLoading, useIonToast, useIonViewDidEnter } from '@ionic/react';
+import { IonAvatar, IonButton, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonCol, IonContent, IonGrid, IonHeader, IonIcon, IonImg, IonItem, IonSpinner, IonLabel, IonList, IonPage, IonRow, IonSelect, IonSelectOption, IonText, IonTitle, IonToolbar, ToastOptions, useIonActionSheet, useIonAlert, useIonLoading, useIonToast, useIonViewDidEnter } from '@ionic/react';
 
 import './Tab1.css';
 import Clock from 'react-live-clock';
@@ -6,12 +6,11 @@ import { useEffect, useState } from 'react';
 import '../components/ExploreContainer.css';
 import { calendarClear, informationCircleOutline, saveOutline, arrowUndoOutline } from 'ionicons/icons';
 import { supabase } from '../utils/SupabaseClient';
-import { IPegawaiResponse } from '../interfaces/IResponse';
-import moment from 'moment';
+import { IPegawaiResponse, IPresensiResponse } from '../interfaces/IResponse';
+import moment, { duration } from 'moment';
 import 'moment/locale/id';
-import sun from '../assets/icon/sun.png'
-import sunrise from '../assets/icon/sunrise.png'
-import sunset from '../assets/icon/sunset.png'
+
+import { sesiAben, jabatan, imgSesi, setSesi } from '../utils/Helper';
 
 const Tab1: React.FC = () => {
   const [presentToast] = useIonToast();
@@ -27,28 +26,36 @@ const Tab1: React.FC = () => {
     return moment(Date.now()).locale('id');
   });
 
+  const [spinner, setSpinner] = useState<boolean>(false);
+
   const [presensi, setPresensi] = useState<any[]>()
 
+  const NotifToaster = (position: 'top' | 'middle' | 'bottom', message: string, color: ToastOptions["color"]) => {
+    presentToast({
+      message: message,
+      position: position,
+      color: color,
+      duration: 3000
+    });
+  };
 
   const selectPegawai = (e: any) => {
     const id = e.target.value
     const findPegawaiById: IPegawaiResponse = pegawaiList?.find((val, i) => (val.id === id));
     // console.log(selectedPegawai);
     setSelectedPegawai(findPegawaiById);
+    setSpinner(true);
+    supabase.from('presensi').select('*').match({ ppnpn_id: id }).then(({ data, error }) => {
+      if (error) {
+        NotifToaster('top', error.message, 'danger');
+      }
+      if (data) {
+        setPresensi(data)
+      }
+      setSpinner(false);
+    })
   }
 
-  const NotifToaster = (position: 'top' | 'middle' | 'bottom', message: string, color: ToastOptions["color"]) => {
-    presentToast({
-      message: message,
-      position: position,
-      color: color
-    });
-  };
-
-  const jabatan = (jabId: number): string => {
-    const jabatanList = ['', 'Pramubakti', 'Supir', 'Satpam'];
-    return jabatanList[jabId];
-  }
 
   useEffect(() => {
     if (Loading) {
@@ -58,7 +65,9 @@ const Tab1: React.FC = () => {
         // duration: 5000
       });
     } else {
-      dismiss();
+      setTimeout(() => {
+        dismiss();
+      }, 1000);
     }
   }, [Loading])
 
@@ -110,7 +119,7 @@ const Tab1: React.FC = () => {
                       <IonText>{Moment.format('dddd DD MMMM yy')}</IonText>
                     </IonCardTitle>
                   </IonCardHeader>
-                  <IonCardContent>
+                  <IonCardContent color={'primary'}>
                     {selectedPegawai && selectedPegawai?.id
                       ? <>
                         <IonItem lines="none">
@@ -131,7 +140,6 @@ const Tab1: React.FC = () => {
                             <p>{jabatan(selectedPegawai.jabatan_id)}</p>
                           </IonLabel>
                         </IonItem>
-                        <IonItemDivider />
                         <IonItem>
                           <IonGrid>
                             <IonRow class='ion-justify-content-center'>
@@ -155,17 +163,18 @@ const Tab1: React.FC = () => {
                                         absen: 0,
                                         tanggal: Moment.format('Y-M-D'),
                                         waktu: moment(Date.now()).format('HH:mm:ss'),
-                                        ppnpn_id: selectedPegawai.id
-                                      }).select()
+                                        ppnpn_id: selectedPegawai.id,
+                                        jenis: setSesi(Moment.hour())
+                                      }).select('*')
                                       if (error) {
-                                        setNotifMessage(error.message)
+                                        NotifToaster('top', 'Silahkan Coba Lagi Nanti', 'danger')
                                       }
 
                                       if (data) {
                                         setPresensi(data)
+                                        NotifToaster('top', 'Berhasil', 'success')
                                       }
                                       setLoading(false);
-                                      NotifToaster('top', 'Berhasil', 'success')
                                     },
                                   },
                                   {
@@ -191,60 +200,57 @@ const Tab1: React.FC = () => {
                           </IonButton>
                         </div></>
                       : <IonText><strong> Pegawai Belum Di Pilih</strong></IonText>}
-
-
                   </IonCardContent>
                 </IonCard>
               </div>
             </IonCol>
           </IonRow>
-          <IonRow class='ion-margin ion-justify-content-center ion-align-items-center'>
-            <IonCol>
-              <div id="FG6pmT3dZ2uqd9PWnlWo">
-                <IonGrid class="ion-no-padding">
-                  <IonRow>
-                    <IonCol size="12">
-                      <div className="widget">
-                        <div className="ion-padding">
-                          <IonItem lines="none" class="ion-padding-vertical">
-                            <IonAvatar slot="start">
-                              <IonImg src={sunset} />
-                            </IonAvatar>
-                            <IonLabel>
-                              <span className="title">17:12</span>
-                              <span className="sub-title">Pulang</span>
-                            </IonLabel>
-                          </IonItem>
-                          <IonItem lines="none" class="ion-padding-vertical">
-                            <IonAvatar slot="start">
-                              <IonImg src={sun} />
-                            </IonAvatar>
-                            <IonLabel>
-                              <span className="title">
-                                12:31
-                              </span>
-                              <span className="sub-title"> Siang</span>
-                            </IonLabel>
-                          </IonItem>
-                          <IonItem lines="none" class="ion-padding-vertical">
-                            <IonAvatar slot="start">
-                              <IonImg src={sunrise} />
-                            </IonAvatar>
-                            <IonLabel>
-                              <span className="title">
-                                08:43
-                              </span>
-                              <span className="sub-title"> Masuk</span>
-                            </IonLabel>
-                          </IonItem>
-                        </div>
-                      </div>
-                    </IonCol>
-                  </IonRow>
-                </IonGrid>
-              </div>
-            </IonCol>
+          <IonRow class='ion-justify-content-center'>
+            {spinner ? <IonSpinner /> : ''}
           </IonRow>
+          <div id="FG6pmT3dZ2uqd9PWnlWo">
+            <IonGrid class="ion-no-padding">
+              <IonRow>
+                <div className="widget">
+                  <div className="ion-padding-horizontal ion-no-padding-vertical">
+                    {presensi?.map((row: IPresensiResponse, i) => {
+                      return <IonItem key={++i} lines="none" class="ion-padding-vertical">
+                        <IonAvatar slot="start">
+                          <IonImg src={imgSesi(row.jenis)} />
+                        </IonAvatar>
+                        <IonLabel>
+                          <span className="title">{row.waktu}</span>
+                          <span className="sub-title">{sesiAben(row.jenis)}</span>
+                        </IonLabel>
+                      </IonItem>
+                    })}
+                    {/* <IonItem lines="none" class="ion-padding-vertical">
+                      <IonAvatar slot="start">
+                        <IonImg src={sun} />
+                      </IonAvatar>
+                      <IonLabel>
+                        <span className="title">
+                          12:31
+                        </span>
+                        <span className="sub-title"> Siang</span>
+                      </IonLabel>
+                    </IonItem>
+                    <IonItem lines="none" class="ion-padding-vertical">
+                      <IonAvatar slot="start">
+                        <IonImg src={sunrise} />
+                      </IonAvatar>
+                      <IonLabel>
+                        <span className="title">
+                          08:43
+                        </span>
+                        <span className="sub-title"> Masuk</span>
+                      </IonLabel>
+                    </IonItem> */}
+                  </div>
+                </div>
+              </IonRow>
+            </IonGrid>
+          </div>
         </IonGrid>
       </IonContent>
     </IonPage>
