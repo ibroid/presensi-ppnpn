@@ -34,7 +34,7 @@
 
 #NkPulBbLDg7ywAjv6FeZ ion-card ion-card-content {
     padding: 16px;
-    background: #fff !important;
+    background: #ffffff !important;
 }
 
 #NkPulBbLDg7ywAjv6FeZ ion-card ion-card-content ion-item {
@@ -91,7 +91,7 @@
 }
 
 #FG6pmT3dZ2uqd9PWnlWo .widget {
-    background: #212121;
+    /* background: #212121; */
     border-radius: 16px !important;
     height: auto;
     width: 100%;
@@ -101,12 +101,12 @@
 
 #FG6pmT3dZ2uqd9PWnlWo .widget ion-item {
     --background: #2e2e2e !important;
-    padding-bottom: 16px;
+    padding-bottom: 8px;
     --border-radius: 16px;
 }
 
 #FG6pmT3dZ2uqd9PWnlWo .widget ion-item:last-child {
-    padding-bottom: 16px;
+    /* padding-bottom: 16px; */
 }
 
 #FG6pmT3dZ2uqd9PWnlWo .widget ion-item ion-avatar {
