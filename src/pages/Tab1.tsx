@@ -28,7 +28,7 @@ const Tab1: React.FC = () => {
 
   const [spinner, setSpinner] = useState<boolean>(false);
 
-  const [presensi, setPresensi] = useState<any[]>()
+  const [presensi, setPresensi] = useState<any[]>([])
 
   const NotifToaster = (position: 'top' | 'middle' | 'bottom', message: string, color: ToastOptions["color"]) => {
     presentToast({
@@ -45,7 +45,7 @@ const Tab1: React.FC = () => {
     // console.log(selectedPegawai);
     setSelectedPegawai(findPegawaiById);
     setSpinner(true);
-    supabase.from('presensi').select('*').match({ ppnpn_id: id }).then(({ data, error }) => {
+    supabase.from('presensi').select('*').match({ ppnpn_id: id, tanggal: Moment.format('Y-M-D') }).then(({ data, error }) => {
       if (error) {
         NotifToaster('top', error.message, 'danger');
       }
@@ -81,7 +81,7 @@ const Tab1: React.FC = () => {
         setNotifMessage(prev => prev += error.message)
         presentAlert({
           header: 'Notifikasi',
-          message: notifMessage,
+          message: 'Koneksi Gagal',
           buttons: ['Kembali']
         })
       }
@@ -89,6 +89,30 @@ const Tab1: React.FC = () => {
 
     bootstrapping()
   })
+
+  const checkPresent = (): boolean => {
+    if (presensi.length == 0) {
+      console.log('1')
+      return true;
+    }
+
+    if (presensi[presensi.length - 1].jenis == 1 && Moment.hour() < 12) {
+      console.log('2')
+      return false
+    }
+
+    if (presensi[presensi.length - 1].jenis == 2 && Moment.hour() > 12 && Moment.hour() < 13) {
+      console.log('3')
+      return false
+    }
+
+    if (presensi[presensi.length - 1].jenis == 3 && Moment.hour() > 14) {
+      console.log('4')
+      return false
+    }
+
+    return true;
+  }
 
   return (
     <IonPage>
@@ -125,6 +149,10 @@ const Tab1: React.FC = () => {
                         <IonItem lines="none">
                           <IonAvatar slot="start">
                             <IonImg
+                              onIonError={() => {
+                                NotifToaster('top', 'Foto gagal dimuat', 'danger');
+                                setLoading(false);
+                              }}
                               onIonImgDidLoad={() => setLoading(false)}
                               onIonImgWillLoad={() => setLoading(true)}
                               src={selectedPegawai?.photos} alt='foto' />
@@ -147,58 +175,70 @@ const Tab1: React.FC = () => {
                             </IonRow>
                           </IonGrid>
                         </IonItem>
-                        <div className="action">
-                          <IonButton
-                            onClick={() => {
-                              presentAction({
-                                header: 'Simpan Presensi',
-                                buttons: [
-                                  {
-                                    text: 'Simpan',
-                                    icon: saveOutline,
-                                    async handler() {
-                                      setLoading(true);
-                                      const { data, error } = await supabase.from('presensi').insert({
-                                        status: 1,
-                                        absen: 0,
-                                        tanggal: Moment.format('Y-M-D'),
-                                        waktu: moment(Date.now()).format('HH:mm:ss'),
-                                        ppnpn_id: selectedPegawai.id,
-                                        jenis: setSesi(Moment.hour())
-                                      }).select('*')
-                                      if (error) {
-                                        NotifToaster('top', 'Silahkan Coba Lagi Nanti', 'danger')
-                                      }
+                        {!checkPresent()
+                          ? <IonItem>
+                            <IonGrid>
+                              <IonRow class='ion-justify-content-center'>
+                                <IonText color={'success'}>Anda Sudah Presensi</IonText>
+                              </IonRow>
+                            </IonGrid>
+                          </IonItem>
+                          : <div className="action">
+                            <IonButton
+                              onClick={() => {
+                                presentAction({
+                                  header: 'Simpan Presensi',
+                                  buttons: [
+                                    {
+                                      text: 'Simpan',
+                                      icon: saveOutline,
+                                      async handler() {
+                                        setLoading(true);
+                                        const { data, error } = await supabase.from('presensi').insert({
+                                          status: 1,
+                                          absen: 0,
+                                          tanggal: Moment.format('Y-M-D'),
+                                          waktu: moment(Date.now()).format('HH:mm:ss'),
+                                          ppnpn_id: selectedPegawai.id,
+                                          jenis: setSesi(Moment.hour())
+                                        }).select('*').single()
+                                        if (error) {
+                                          NotifToaster('top', 'Silahkan Coba Lagi Nanti', 'danger')
+                                        }
 
-                                      if (data) {
-                                        setPresensi(data)
-                                        NotifToaster('top', 'Berhasil', 'success')
-                                      }
-                                      setLoading(false);
+                                        if (data) {
+                                          setPresensi(prev => {
+                                            return [...prev, data];
+                                          })
+                                          NotifToaster('top', 'Berhasil', 'success')
+                                        }
+                                        setLoading(false);
+                                      },
                                     },
-                                  },
-                                  {
-                                    text: 'Cancel',
-                                    role: 'cancel',
-                                    icon: arrowUndoOutline
-                                  },
-                                ],
-                              })
-                            }}
-                            shape="round"
-                            class="accept"
-                            mode="ios">
-                            Presensi
-                          </IonButton>
-                          <IonButton
-                            shape="round"
-                            fill="outline"
-                            color="danger"
-                            mode="ios"
-                          >
-                            Absen
-                          </IonButton>
-                        </div></>
+                                    {
+                                      text: 'Cancel',
+                                      role: 'cancel',
+                                      icon: arrowUndoOutline
+                                    },
+                                  ],
+                                })
+                              }}
+                              shape="round"
+                              class="accept"
+                              mode="ios">
+                              Presensi
+                            </IonButton>
+                            <IonButton
+                              shape="round"
+                              fill="outline"
+                              color="danger"
+                              mode="ios"
+                            >
+                              Absen
+                            </IonButton>
+                          </div>
+                        }
+                      </>
                       : <IonText><strong> Pegawai Belum Di Pilih</strong></IonText>}
                   </IonCardContent>
                 </IonCard>
@@ -224,28 +264,6 @@ const Tab1: React.FC = () => {
                         </IonLabel>
                       </IonItem>
                     })}
-                    {/* <IonItem lines="none" class="ion-padding-vertical">
-                      <IonAvatar slot="start">
-                        <IonImg src={sun} />
-                      </IonAvatar>
-                      <IonLabel>
-                        <span className="title">
-                          12:31
-                        </span>
-                        <span className="sub-title"> Siang</span>
-                      </IonLabel>
-                    </IonItem>
-                    <IonItem lines="none" class="ion-padding-vertical">
-                      <IonAvatar slot="start">
-                        <IonImg src={sunrise} />
-                      </IonAvatar>
-                      <IonLabel>
-                        <span className="title">
-                          08:43
-                        </span>
-                        <span className="sub-title"> Masuk</span>
-                      </IonLabel>
-                    </IonItem> */}
                   </div>
                 </div>
               </IonRow>

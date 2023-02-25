@@ -26,9 +26,22 @@ export function setSesi(hour: number) {
         return 2;
     }
 
-    if (hour > 13 && hour < 16) {
+    if (hour > 16) {
         return 3;
     }
+}
 
+export function setSesiNama(hour: number) {
+    if (hour > 8 && hour < 12) {
+        return 'Datang';
+    }
+
+    if (hour > 12 && hour < 13) {
+        return 'Siang';
+    }
+
+    if (hour > 16) {
+        return 'Pulang';
+    }
 }
 
