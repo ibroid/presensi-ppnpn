@@ -24,3 +24,16 @@ export interface IPresensiResponse {
     waktu: string;
     jenis: 1 | 2 | 3
 }
+
+export interface IPresensiWithPpnpnResponse {
+    absen: number;
+    created_at: string;
+    id: 4;
+    ppnpn_id: number;
+    status: 1;
+    tanggal: string;
+    updated_at: null | string;
+    waktu: string;
+    jenis: 1 | 2 | 3;
+    ppnpn: IPegawaiResponse
+}
