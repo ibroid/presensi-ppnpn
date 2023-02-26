@@ -1,11 +1,11 @@
-import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonDatetime, IonGrid, IonRow, IonItem, IonAvatar, IonLabel, IonCol, useIonViewDidEnter, useIonToast, IonSpinner, IonText, IonSegment, IonSegmentButton } from '@ionic/react';
+import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonDatetime, IonGrid, IonRow, IonItem, IonAvatar, IonLabel, IonCol, useIonViewDidEnter, useIonToast, IonSpinner, IonText, IonSegment, IonSegmentButton, useIonLoading } from '@ionic/react';
 import { Virtuoso } from 'react-virtuoso';
 import '../components/ExploreContainer.css'
 import './Tab2.css';
 import '../global.css';
 import { supabase } from '../utils/SupabaseClient';
 import moment, { Moment } from 'moment';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import 'moment/locale/id';
 import { IPresensiWithPpnpnResponse } from '../interfaces/IResponse';
 import { setSesi, setSesiNama } from '../utils/Helper';
@@ -13,18 +13,22 @@ import { setSesi, setSesiNama } from '../utils/Helper';
 const Tab2: React.FC = () => {
 
   const [NotifToaster] = useIonToast();
-
+  const [loading, setLoading] = useState<boolean>(false);
   const [presensiList, setPresensiList] = useState<any[]>([]);
+  const [presensiShowList, setPresensiShowList] = useState<any[]>([]);
+  const [present, dismiss] = useIonLoading();
+  const [selectedSesi, setSelectedSesi] = useState<'1' | '2' | '3'>('1');
 
   const [Moment, setMoment] = useState<Moment>(() => {
     return moment(Date.now()).locale('id');
-  })
+  });
 
   useIonViewDidEnter(() => {
     const bootstrapping = async () => {
+      setLoading(true);
       const { data, error } = await supabase.from('presensi')
         .select('*, ppnpn(*)')
-        .match({ tanggal: Moment.format('Y-M-D'), jenis: setSesi(Moment.hour()) })
+        .match({ tanggal: Moment.format('Y-M-D') })
         .order('waktu', { ascending: false })
       if (error) {
         NotifToaster({
@@ -36,13 +40,28 @@ const Tab2: React.FC = () => {
       }
 
       if (data) {
-        // console.log(data)
         setPresensiList(data)
+        const verted = data.filter((val, i) => (val.jenis == '1'))
+        setPresensiShowList(verted);
       }
+      setLoading(false);
     }
-
     bootstrapping()
-  })
+  });
+
+  useEffect(() => {
+    if (loading) {
+      present({
+        message: 'Loading...',
+        spinner: 'circles',
+        // duration: 5000
+      });
+    } else {
+      setTimeout(() => {
+        dismiss();
+      }, 1000);
+    }
+  }, [loading])
 
   return (
     <IonPage>
@@ -54,12 +73,39 @@ const Tab2: React.FC = () => {
       <IonContent fullscreen>
         <IonGrid>
           <IonRow class="ion-no-margin-top ion-justify-content-center ion-align-items-center">
-            <IonDatetime presentation="date" color={"primary"} showDefaultTimeLabel={false}></IonDatetime>
+            <IonDatetime
+              onIonChange={async (e) => {
+                const selectedDate = String(e.target.value).replace('T21:43:00+07:00', '')
+                setLoading(true);
+                const { data, error } = await supabase.from('presensi')
+                  .select('*, ppnpn(*)')
+                  .match({ tanggal: selectedDate })
+                  .order('waktu', { ascending: false })
+                if (error) {
+                  NotifToaster({
+                    message: 'Terjadi Kesalahan. ' + error.message,
+                    duration: 2000,
+                    position: 'top',
+                    color: 'danger'
+                  })
+                }
+
+                if (data) {
+                  setPresensiList(data)
+                  const verted = data.filter((val, i) => (val.jenis == '1'))
+                  setPresensiShowList(verted);
+                }
+                setSelectedSesi('1');
+                setLoading(false);
+              }}
+              presentation="date" color={"primary"} showDefaultTimeLabel={false}></IonDatetime>
           </IonRow>
           <IonRow>
             <IonSegment onIonChange={(e: any) => {
-              console.log(e.target.value)
-            }} value={'1'}>
+              const verted = presensiList.filter((val, i) => (val.jenis == e.target.value))
+              setPresensiShowList(verted);
+              setSelectedSesi(e.target.value)
+            }} value={selectedSesi}>
               <IonSegmentButton value='1'>
                 <IonLabel>Datang</IonLabel>
               </IonSegmentButton>
@@ -74,7 +120,7 @@ const Tab2: React.FC = () => {
         </IonGrid>
         <Virtuoso
           style={{ height: '50%' }}
-          data={presensiList}
+          data={presensiShowList}
           itemContent={(index, data: IPresensiWithPpnpnResponse) => {
             return (
               <div style={{ height: '56px' }}>

@@ -1,0 +1,86 @@
+#Pw9uiFXE8bJTD0uxttda .card {
+    border-radius: 16px !important;
+    height: auto;
+    width: 100%;
+    margin: 0px !important;
+    padding: 0px !important;
+}
+
+#Pw9uiFXE8bJTD0uxttda .card ion-card-header {
+
+    --background: linear-gradient(rgb(0 0 0 / 0%) 100%,
+            rgb(255 255 255 / 0%) 100%),
+        url(https://images.pexels.com/photos/2380451/pexels-photo-2380451.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1);
+    background-position: top;
+    background-size: cover;
+    height: 130px;
+}
+
+#Pw9uiFXE8bJTD0uxttda .card ion-item {
+    padding: 0px 0;
+    --background: linear-gradient(rgb(0 0 0 / 0%) 82%,
+            rgb(255 255 255 / 0%) 100%);
+}
+
+#Pw9uiFXE8bJTD0uxttda .card ion-card-content {
+    padding: 16px 16px 16px;
+    background: #fff;
+}
+
+#Pw9uiFXE8bJTD0uxttda .card ion-card-content .profile {
+    display: grid;
+    justify-content: center;
+    top: -60px;
+    position: relative;
+    margin: 0 50%;
+    height: 160px;
+}
+
+#Pw9uiFXE8bJTD0uxttda .card ion-card-content .profile .img,
+#Pw9uiFXE8bJTD0uxttda .card ion-card-content .profile .name {
+    display: grid;
+    justify-content: center;
+}
+
+#Pw9uiFXE8bJTD0uxttda .card ion-card-content .profile .action {
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+}
+
+#Pw9uiFXE8bJTD0uxttda .card ion-card-content .profile ion-avatar.large {
+    height: 90px;
+    width: 90px;
+}
+
+#Pw9uiFXE8bJTD0uxttda .card ion-card-content .profile ion-avatar {
+    box-shadow: rgb(50 69 76 / 52%) 0px 0px 50px 8px;
+}
+
+#Pw9uiFXE8bJTD0uxttda .card ion-card-content .profile .sub-title {
+    color: #b9b9b9;
+    font-size: 0.9rem;
+    font-weight: 600;
+    letter-spacing: 0.8px;
+    display: block;
+    white-space: break-spaces;
+}
+
+#Pw9uiFXE8bJTD0uxttda .card ion-card-content .profile .title {
+    display: block;
+    font-size: 1.2rem;
+    color: #262626;
+    font-weight: 600;
+    letter-spacing: 0.8px;
+    margin-top: 8px;
+}
+
+#Pw9uiFXE8bJTD0uxttda .card ion-card-content .profile ion-button {
+    font-weight: 500;
+    letter-spacing: 1px;
+    font-size: 0.8rem;
+}
+
+#Pw9uiFXE8bJTD0uxttda .card ion-card-content .profile ion-button ion-icon {
+    margin: 0 14px;
+}

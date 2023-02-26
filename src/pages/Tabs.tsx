@@ -19,9 +19,9 @@ const Tabs: React.FC = () => {
 		<IonTabs>
 			<IonRouterOutlet>
 				<Route exact path={'/app/tab1'} component={Tab1} />
-				<Route exact path={'/app/tab1/details'} component={Details} />
 				<Route exact path={'/app/tab2'} component={Tab2} />
 				<Route exact path={'/app/tab3'} component={Tab3} />
+				<Route exact path={'/app/tab3/details/:id'} component={Details} />
 				<Route exact path={'/app'}>
 					<Redirect to="/app/tab1" />
 				</Route>
