@@ -1,4 +1,4 @@
-import { IonAvatar, IonButton, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonCol, IonContent, IonGrid, IonHeader, IonIcon, IonImg, IonItem, IonSpinner, IonLabel, IonList, IonPage, IonRow, IonSelect, IonSelectOption, IonText, IonTitle, IonToolbar, ToastOptions, useIonActionSheet, useIonAlert, useIonLoading, useIonToast, useIonViewDidEnter } from '@ionic/react';
+import { IonAvatar, IonButton, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonCol, IonContent, IonGrid, IonHeader, IonIcon, IonImg, IonItem, IonSpinner, IonLabel, IonList, IonPage, IonRow, IonSelect, IonSelectOption, IonText, IonTitle, IonToolbar, ToastOptions, useIonActionSheet, useIonAlert, useIonLoading, useIonToast, useIonViewDidEnter, useIonViewDidLeave } from '@ionic/react';
 
 import './Tab1.css';
 import Clock from 'react-live-clock';
@@ -7,14 +7,14 @@ import '../components/ExploreContainer.css';
 import { calendarClear, informationCircleOutline, saveOutline, arrowUndoOutline } from 'ionicons/icons';
 import { supabase } from '../utils/SupabaseClient';
 import { IPegawaiResponse, IPresensiResponse } from '../interfaces/IResponse';
-import moment, { duration } from 'moment';
+import moment from 'moment';
 import 'moment/locale/id';
 
 import { sesiAben, jabatan, imgSesi, setSesi } from '../utils/Helper';
 
 const Tab1: React.FC = () => {
   const [presentToast] = useIonToast();
-  // const [locationNow, setLocationNow] = useState<string>("Lokasi Belum Ditentukan");
+
   const [presentAlert] = useIonAlert();
   const [notifMessage, setNotifMessage] = useState<string>('Pemberitahuan. ');
   const [pegawaiList, setPegawaiList] = useState<any[]>();
@@ -42,7 +42,6 @@ const Tab1: React.FC = () => {
   const selectPegawai = (e: any) => {
     const id = e.target.value
     const findPegawaiById: IPegawaiResponse = pegawaiList?.find((val, i) => (val.id === id));
-    // console.log(selectedPegawai);
     setSelectedPegawai(findPegawaiById);
     setSpinner(true);
     supabase.from('presensi').select('*').match({ ppnpn_id: id, tanggal: Moment.format('Y-M-D') }).then(({ data, error }) => {
@@ -61,8 +60,7 @@ const Tab1: React.FC = () => {
     if (Loading) {
       present({
         message: 'Loading...',
-        spinner: 'circles',
-        // duration: 5000
+        spinner: 'circles'
       });
     } else {
       setTimeout(() => {
@@ -114,11 +112,15 @@ const Tab1: React.FC = () => {
     return true;
   }
 
+  useIonViewDidLeave(() => {
+    setSelectedPegawai(undefined);
+  })
+
   return (
     <IonPage>
       <IonHeader>
-        <IonToolbar color={'tertiary'} class='ion-background-primary'>
-          <IonTitle size="large">Presensi Kehadiran</IonTitle>
+        <IonToolbar color={'tertiary'} >
+          <IonTitle>Presensi Kehadiran</IonTitle>
         </IonToolbar>
       </IonHeader>
       <IonContent fullscreen>
@@ -127,7 +129,7 @@ const Tab1: React.FC = () => {
             <IonList>
               <IonItem>
                 <IonLabel>Pilih Pegawai</IonLabel>
-                <IonSelect class='ion-width-max' onIonChange={selectPegawai}  >
+                <IonSelect value={selectedPegawai?.id || 0} class='ion-width-max' onIonChange={selectPegawai}  >
                   {pegawaiList?.map((row: IPegawaiResponse, i) => <IonSelectOption key={++i} value={row.id}>{row.fullname}</IonSelectOption>)}
                 </IonSelect>
               </IonItem>
@@ -185,6 +187,8 @@ const Tab1: React.FC = () => {
                           </IonItem>
                           : <div className="action">
                             <IonButton
+                              fill={'outline'}
+                              color={'tertiary'}
                               onClick={() => {
                                 presentAction({
                                   header: 'Simpan Presensi',
@@ -228,14 +232,14 @@ const Tab1: React.FC = () => {
                               mode="ios">
                               Presensi
                             </IonButton>
-                            <IonButton
+                            {/* <IonButton
                               shape="round"
                               fill="outline"
                               color="danger"
                               mode="ios"
                             >
                               Absen
-                            </IonButton>
+                            </IonButton> */}
                           </div>
                         }
                       </>
