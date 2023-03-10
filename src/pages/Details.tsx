@@ -117,7 +117,7 @@ const Details: React.FC<UserDetailPageProps> = ({ match }) => {
 													<div className="action">
 														<IonButton
 															fill="solid"
-															color="warning"
+															color="warning`"
 															shape="round"
 															mode="ios"
 															size="small"
