@@ -10,7 +10,6 @@ import {
 	IonGrid,
 	IonHeader,
 	IonIcon,
-	IonItem,
 	IonPage,
 	IonRow,
 	IonText,
@@ -20,10 +19,9 @@ import {
 	useIonViewDidEnter
 } from "@ionic/react"
 import "../style/details.css";
-import { arrowBackOutline, ellipsisHorizontal, chatbubbleOutline } from "ionicons/icons";
+import { chatbubbleOutline } from "ionicons/icons";
 import { RouteComponentProps } from "react-router";
 import { supabase } from "../utils/SupabaseClient";
-import { duration } from "moment";
 import { useState } from "react";
 import { jabatan } from "../utils/Helper";
 

@@ -1,4 +1,4 @@
-import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonDatetime, IonGrid, IonRow, IonItem, IonAvatar, IonLabel, IonCol, useIonViewDidEnter, useIonToast, IonSpinner, IonText, IonSegment, IonSegmentButton, useIonLoading } from '@ionic/react';
+import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonDatetime, IonGrid, IonRow, IonItem, IonAvatar, IonLabel, IonCol, useIonViewDidEnter, useIonToast, IonSegment, IonSegmentButton, useIonLoading } from '@ionic/react';
 import { Virtuoso } from 'react-virtuoso';
 import '../components/ExploreContainer.css'
 import './Tab2.css';
@@ -8,7 +8,6 @@ import moment, { Moment } from 'moment';
 import { useEffect, useState } from 'react';
 import 'moment/locale/id';
 import { IPresensiWithPpnpnResponse } from '../interfaces/IResponse';
-import { setSesi, setSesiNama } from '../utils/Helper';
 
 const Tab2: React.FC = () => {
 
@@ -60,6 +59,12 @@ const Tab2: React.FC = () => {
       setTimeout(() => {
         dismiss();
       }, 1000);
+    }
+
+    return () => {
+      setLoading(false);
+      setPresensiList([]);
+      setPresensiShowList([]);
     }
   }, [loading])
 
