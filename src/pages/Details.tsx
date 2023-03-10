@@ -102,7 +102,7 @@ const Details: React.FC<UserDetailPageProps> = ({ match }) => {
 														<IonAvatar class="large">
 															<img
 																alt="person's pic"
-																src="https://images.unsplash.com/photo-1543610892-0b1f7e6d8ac1?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8OTd8fHByb2ZpbGUlMjBwaG90b3xlbnwwfHwwfHw%3D&auto=format&fit=crop&w=500&q=60"
+																src={pegawai?.photos}
 															/>
 														</IonAvatar>
 													</div>
