@@ -63,6 +63,11 @@ const Tab3: React.FC = () => {
         dismiss();
       }, 1000);
     }
+
+    return () => {
+      setPegawaiList([]);
+      setLoading(false);
+    }
   }, [loading])
 
   return (

@@ -2,7 +2,7 @@ import { IonAvatar, IonButton, IonCard, IonCardContent, IonCardHeader, IonCardTi
 
 import './Tab1.css';
 import Clock from 'react-live-clock';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import '../components/ExploreContainer.css';
 import { calendarClear, informationCircleOutline, saveOutline, arrowUndoOutline } from 'ionicons/icons';
 import { supabase } from '../utils/SupabaseClient';
@@ -16,7 +16,6 @@ const Tab1: React.FC = () => {
   const [presentToast] = useIonToast();
 
   const [presentAlert] = useIonAlert();
-  const [notifMessage, setNotifMessage] = useState<string>('Pemberitahuan. ');
   const [pegawaiList, setPegawaiList] = useState<any[]>();
   const [selectedPegawai, setSelectedPegawai] = useState<IPegawaiResponse>();
   const [present, dismiss] = useIonLoading();
@@ -67,6 +66,13 @@ const Tab1: React.FC = () => {
         dismiss();
       }, 1000);
     }
+
+    return () => {
+      setPegawaiList([]);
+      setPresensi([]);
+      setLoading(false);
+      setSelectedPegawai(undefined);
+    }
   }, [Loading])
 
   useIonViewDidEnter(() => {
@@ -76,7 +82,6 @@ const Tab1: React.FC = () => {
         setPegawaiList(data);
       }
       if (error) {
-        setNotifMessage(prev => prev += error.message)
         presentAlert({
           header: 'Notifikasi',
           message: 'Koneksi Gagal',
@@ -88,30 +93,30 @@ const Tab1: React.FC = () => {
     bootstrapping()
   })
 
-  const checkPresent = (): boolean => {
-    if (presensi.length == 0) {
+  const checkPresent = useCallback((): boolean => {
+    if (presensi.length === 0) {
       console.log('1')
       return true;
     }
 
-    if (presensi[presensi.length - 1].jenis == 1 && Moment.hour() < 12) {
+    if (presensi[presensi.length - 1].jenis === 1 && Moment.hour() < 12) {
       console.log('2')
       return false
     }
 
-    if (presensi[presensi.length - 1].jenis == 2 && Moment.hour() > 12 && Moment.hour() < 13) {
+    if (presensi[presensi.length - 1].jenis === 2 && Moment.hour() > 12 && Moment.hour() < 13) {
       console.log('3')
       return false
     }
 
-    if (presensi[presensi.length - 1].jenis == 3 && Moment.hour() > 14) {
+    if (presensi[presensi.length - 1].jenis === 3 && Moment.hour() > 14) {
       console.log('4')
       return false
     }
 
     return true;
   }
-
+    , [])
   useIonViewDidLeave(() => {
     setSelectedPegawai(undefined);
   })
