@@ -69,7 +69,7 @@ const Tab2: React.FC = () => {
   }, [loading])
 
   return (
-    <IonPage>
+    <IonPage className="pageContainer">
       <IonHeader>
         <IonToolbar color={'tertiary'}>
           <IonTitle>Riwayat Presensi</IonTitle>
