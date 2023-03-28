@@ -151,7 +151,7 @@ const Tab1: React.FC = () => {
 
 
   return (
-    <IonPage>
+    <IonPage className="pageContainer">
       <IonHeader>
         <IonToolbar color={'tertiary'} >
           <IonTitle>Presensi Kehadiran</IonTitle>
