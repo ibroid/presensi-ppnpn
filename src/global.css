@@ -14,3 +14,9 @@ ion-datetime {
     border-radius: 16px;
     box-shadow: rgba(var(--ion-color-rose-rgb), 0.3) 0px 10px 15px -3px;
 }
+
+.pageContainer, .footerContainer{
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+}
