@@ -2,6 +2,7 @@ import {
 	IonAvatar,
 	IonBackButton,
 	IonButton,
+	IonButtons,
 	IonCard,
 	IonCardContent,
 	IonCardHeader,
@@ -57,9 +58,9 @@ const Details: React.FC<UserDetailPageProps> = ({ match }) => {
 		<IonPage>
 			<IonHeader>
 				<IonToolbar color={'tertiary'}>
-					<IonButton slot="start">
+					<IonButtons slot="start">
 						<IonBackButton color={'light'} defaultHref="/app/tab3" />
-					</IonButton>
+					</IonButtons>
 					<IonTitle>Statistic Pegawai</IonTitle>
 				</IonToolbar>
 			</IonHeader>
@@ -69,28 +70,7 @@ const Details: React.FC<UserDetailPageProps> = ({ match }) => {
 						<IonRow>
 							<IonCol size="12">
 								<IonCard class="card">
-									<IonCardHeader class="ion-no-padding" color={'medium'}>
-										{/* <IonItem lines="none" class="">
-												<IonButton
-													fill="clear"
-													color="light"
-													size="large"
-													class="ion-no-padding"
-													mode="ios"
-												>
-													<IonIcon icon={arrowBackOutline}></IonIcon>
-												</IonButton>
-												<IonButton
-													slot="end"
-													fill="clear"
-													color="light"
-													size="large"
-													class="ion-no-padding"
-													mode="ios"
-												>
-													<IonIcon icon={ellipsisHorizontal}></IonIcon>
-												</IonButton>
-											</IonItem> */}
+									<IonCardHeader class="ion-no-padding" color={'success'}>
 									</IonCardHeader>
 									<IonCardContent>
 										<IonRow>

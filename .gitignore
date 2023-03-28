@@ -2,6 +2,8 @@
 
 # dependencies
 /node_modules
+/signed-key.jks
+/android
 /.pnp
 .pnp.js
 

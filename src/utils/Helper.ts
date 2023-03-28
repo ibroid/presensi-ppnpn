@@ -18,17 +18,21 @@ export function imgSesi(sesi: 1 | 2 | 3) {
 }
 
 export function setSesi(hour: number) {
-    if (hour > 8 && hour < 12) {
+    if (hour >= 8 && hour < 12) {
+        console.log(hour)
         return 1;
     }
 
-    if (hour > 12 && hour < 13) {
+    if (hour >= 12 && hour < 13) {
+        console.log(hour)
         return 2;
     }
 
-    if (hour > 16) {
+    if (hour >= 16) {
+        console.log(hour)
         return 3;
     }
+
 }
 
 export function setSesiNama(hour: number) {
