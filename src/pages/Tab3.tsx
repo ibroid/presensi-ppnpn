@@ -71,7 +71,7 @@ const Tab3: React.FC = () => {
   }, [loading])
 
   return (
-    <IonPage>
+    <IonPage className="pageContainer">
       <IonHeader>
         <IonToolbar color={'tertiary'}>
           <IonTitle>Statistic Presensi</IonTitle>
