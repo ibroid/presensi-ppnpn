@@ -27,7 +27,7 @@ const Tabs: React.FC = () => {
 				</Route>
 			</IonRouterOutlet>
 
-			<IonTabBar slot="bottom" color={'tertiary'}>
+			<IonTabBar slot="bottom" color={'tertiary'} className="footerContainer">
 				<IonTabButton tab="tab1" href="/app/tab1">
 					<IonIcon icon={location} />
 					<IonLabel>Presensi</IonLabel>
