@@ -1,6 +1,14 @@
 {
-	"appId": "io.ionic.starter",
+	"appId": "com.presensi.ppnpnpaju",
 	"appName": "Presensi PPNPN",
 	"webDir": "build",
-	"bundledWebRuntime": false
+	"bundledWebRuntime": false,
+	"plugins": {
+		"CapacitorHttp": {
+			"enabled": true
+		}
+	},
+	"server": {
+		"cleartext": true
+	}
 }

@@ -18,7 +18,7 @@ const Tab1: React.FC = () => {
   const [presentAlert] = useIonAlert();
   const [pegawaiList, setPegawaiList] = useState<any[]>();
   const [selectedPegawai, setSelectedPegawai] = useState<IPegawaiResponse>();
-  const [present, dismiss] = useIonLoading();
+  const [presentLoading, dismissLoading] = useIonLoading();
   const [Loading, setLoading] = useState<boolean>(false);
   const [presentAction] = useIonActionSheet();
   const [Moment] = useState<moment.Moment>(() => {
@@ -54,46 +54,63 @@ const Tab1: React.FC = () => {
     })
   }
 
-
-  useEffect(() => {
-    if (Loading) {
-      present({
-        message: 'Loading...',
-        spinner: 'circles'
-      });
-    } else {
-      setTimeout(() => {
-        dismiss();
-      }, 1000);
+  const fetchPegawai = useCallback(async (): Promise<void> => {
+    const { data, error } = await supabase.from('ppnpn').select('*');
+    if (data) {
+      setPegawaiList(data);
     }
-
-    return () => {
-      setPegawaiList([]);
-      setPresensi([]);
-      setLoading(false);
-      setSelectedPegawai(undefined);
+    if (error) {
+      presentAlert({
+        header: 'Notifikasi',
+        message: 'Koneksi Gagal',
+        buttons: ['Kembali']
+      })
     }
-  }, [Loading])
+  }, [])
 
-  useIonViewDidEnter(() => {
-    const bootstrapping = async (): Promise<void> => {
-      const { data, error } = await supabase.from('ppnpn').select('*');
-      if (data) {
-        setPegawaiList(data);
-      }
-      if (error) {
-        presentAlert({
-          header: 'Notifikasi',
-          message: 'Koneksi Gagal',
-          buttons: ['Kembali']
-        })
-      }
+  const saveSesi = useCallback(() => {
+    const body = {
+      status: 1,
+      absen: 0,
+      tanggal: Moment.format('Y-M-D'),
+      waktu: moment(Date.now()).format('HH:mm:ss'),
+      ppnpn_id: selectedPegawai?.id,
+      jenis: setSesi(Moment.hour())
     }
+    presentAction({
+      header: 'Simpan Presensi',
+      buttons: [
+        {
+          text: 'Simpan',
+          icon: saveOutline,
+          async handler() {
+            setLoading(true);
+            const { data, error } = await supabase.from('presensi').insert(body).select('*').single()
+            if (error) {
+              NotifToaster('top', 'Silahkan Coba Lagi Nanti', 'danger')
+            }
 
-    bootstrapping()
-  })
+            if (data) {
+              setPresensi(prev => {
+                return [...prev, data];
+              })
+              NotifToaster('top', 'Berhasil', 'success')
+            }
+            setLoading(false);
+          },
+        },
+        {
+          text: 'Cancel',
+          role: 'cancel',
+          icon: arrowUndoOutline
+        },
+      ],
+    })
+  }, [selectedPegawai?.id])
+
 
   const checkPresent = useCallback((): boolean => {
+
     if (presensi.length === 0) {
       console.log('1')
       return true;
@@ -116,10 +133,22 @@ const Tab1: React.FC = () => {
 
     return true;
   }
-    , [])
+    , [presensi.length])
   useIonViewDidLeave(() => {
     setSelectedPegawai(undefined);
   })
+
+
+  useEffect(() => {
+    fetchPegawai()
+
+    return () => {
+      setPegawaiList([]);
+      setPresensi([]);
+      setSelectedPegawai(undefined);
+    }
+  }, [fetchPegawai])
+
 
   return (
     <IonPage>
@@ -130,6 +159,13 @@ const Tab1: React.FC = () => {
       </IonHeader>
       <IonContent fullscreen>
         <IonGrid>
+          <IonRow>
+            <IonCol>
+              <IonText className='ion-text-center'>
+                <p>Form</p>
+              </IonText>
+            </IonCol>
+          </IonRow>
           <IonRow class='ion-justify-content-center ion-align-items-center'>
             <IonList>
               <IonItem>
@@ -194,44 +230,7 @@ const Tab1: React.FC = () => {
                             <IonButton
                               fill={'outline'}
                               color={'tertiary'}
-                              onClick={() => {
-                                presentAction({
-                                  header: 'Simpan Presensi',
-                                  buttons: [
-                                    {
-                                      text: 'Simpan',
-                                      icon: saveOutline,
-                                      async handler() {
-                                        setLoading(true);
-                                        const { data, error } = await supabase.from('presensi').insert({
-                                          status: 1,
-                                          absen: 0,
-                                          tanggal: Moment.format('Y-M-D'),
-                                          waktu: moment(Date.now()).format('HH:mm:ss'),
-                                          ppnpn_id: selectedPegawai.id,
-                                          jenis: setSesi(Moment.hour())
-                                        }).select('*').single()
-                                        if (error) {
-                                          NotifToaster('top', 'Silahkan Coba Lagi Nanti', 'danger')
-                                        }
-
-                                        if (data) {
-                                          setPresensi(prev => {
-                                            return [...prev, data];
-                                          })
-                                          NotifToaster('top', 'Berhasil', 'success')
-                                        }
-                                        setLoading(false);
-                                      },
-                                    },
-                                    {
-                                      text: 'Cancel',
-                                      role: 'cancel',
-                                      icon: arrowUndoOutline
-                                    },
-                                  ],
-                                })
-                              }}
+                              onClick={saveSesi}
                               shape="round"
                               class="accept"
                               mode="ios">
