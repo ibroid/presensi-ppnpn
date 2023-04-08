@@ -1,26 +1,28 @@
-import { IonAvatar, IonButton, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonCol, IonContent, IonGrid, IonHeader, IonIcon, IonImg, IonItem, IonSpinner, IonLabel, IonList, IonPage, IonRow, IonSelect, IonSelectOption, IonText, IonTitle, IonToolbar, ToastOptions, useIonActionSheet, useIonAlert, useIonLoading, useIonToast, useIonViewDidEnter, useIonViewDidLeave } from '@ionic/react';
+import { IonAvatar, IonButton, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonCol, IonContent, IonGrid, IonHeader, IonIcon, IonImg, IonItem, IonLabel, IonList, IonPage, IonRow, IonSelect, IonSelectOption, IonText, IonTitle, IonToolbar, ToastOptions, useIonActionSheet, useIonAlert, useIonLoading, useIonToast, useIonViewDidEnter, useIonViewDidLeave } from '@ionic/react';
 
 import './Tab1.css';
-import Clock from 'react-live-clock';
-import { useCallback, useEffect, useState } from 'react';
+
+import { useCallback, useState } from 'react';
 import '../components/ExploreContainer.css';
-import { calendarClear, informationCircleOutline, saveOutline, arrowUndoOutline } from 'ionicons/icons';
+import { calendarClear } from 'ionicons/icons';
 import { supabase } from '../utils/SupabaseClient';
 import { IPegawaiResponse, IPresensiResponse } from '../interfaces/IResponse';
 import moment from 'moment';
 import 'moment/locale/id';
 
 import { sesiAben, jabatan, imgSesi, setSesi } from '../utils/Helper';
+import FormPresensi from '../components/FormPresensi';
 
 const Tab1: React.FC = () => {
+
   const [presentToast] = useIonToast();
 
   const [presentAlert] = useIonAlert();
   const [pegawaiList, setPegawaiList] = useState<any[]>();
   const [selectedPegawai, setSelectedPegawai] = useState<IPegawaiResponse>();
+  const [selectedPegawaiId, setSelectedPegawaiId] = useState<number>(0)
   const [presentLoading, dismissLoading] = useIonLoading();
-  const [Loading, setLoading] = useState<boolean>(false);
-  const [presentAction] = useIonActionSheet();
+
   const [Moment] = useState<moment.Moment>(() => {
     return moment(Date.now()).locale('id');
   });
@@ -29,30 +31,34 @@ const Tab1: React.FC = () => {
 
   const [presensi, setPresensi] = useState<any[]>([])
 
-  const NotifToaster = (position: 'top' | 'middle' | 'bottom', message: string, color: ToastOptions["color"]) => {
+  const NotifToaster = useCallback((position: 'top' | 'middle' | 'bottom', message: string, color: ToastOptions["color"]) => {
     presentToast({
       message: message,
       position: position,
       color: color,
       duration: 3000
     });
-  };
+  }, [])
 
-  const selectPegawai = (e: any) => {
-    const id = e.target.value
-    const findPegawaiById: IPegawaiResponse = pegawaiList?.find((val, i) => (val.id === id));
+  const selectPegawai = useCallback(async () => {
+    await presentLoading("Tunggu Sebentar")
+    const findPegawaiById: IPegawaiResponse = pegawaiList?.find((val, i) => (val.id === selectedPegawaiId));
     setSelectedPegawai(findPegawaiById);
-    setSpinner(true);
-    supabase.from('presensi').select('*').match({ ppnpn_id: id, tanggal: Moment.format('Y-M-D') }).then(({ data, error }) => {
+    supabase.from('presensi').select('*').match(
+      {
+        ppnpn_id: selectedPegawaiId,
+        tanggal: Moment.format('Y-M-D')
+      }
+    ).then(({ data, error }) => {
       if (error) {
         NotifToaster('top', error.message, 'danger');
       }
       if (data) {
         setPresensi(data)
       }
-      setSpinner(false);
+      dismissLoading()
     })
-  }
+  }, [selectedPegawaiId])
 
   const fetchPegawai = useCallback(async (): Promise<void> => {
     const { data, error } = await supabase.from('ppnpn').select('*');
@@ -68,87 +74,22 @@ const Tab1: React.FC = () => {
     }
   }, [])
 
-  const saveSesi = useCallback(() => {
-    const body = {
-      status: 1,
-      absen: 0,
-      tanggal: Moment.format('Y-M-D'),
-      waktu: moment(Date.now()).format('HH:mm:ss'),
-      ppnpn_id: selectedPegawai?.id,
-      jenis: setSesi(Moment.hour())
-    }
-    presentAction({
-      header: 'Simpan Presensi',
-      buttons: [
-        {
-          text: 'Simpan',
-          icon: saveOutline,
-          async handler() {
-            setLoading(true);
-            const { data, error } = await supabase.from('presensi').insert(body).select('*').single()
-            if (error) {
-              NotifToaster('top', 'Silahkan Coba Lagi Nanti', 'danger')
-            }
 
-            if (data) {
-              setPresensi(prev => {
-                return [...prev, data];
-              })
-              NotifToaster('top', 'Berhasil', 'success')
-            }
-            setLoading(false);
-          },
-        },
-        {
-          text: 'Cancel',
-          role: 'cancel',
-          icon: arrowUndoOutline
-        },
-      ],
-    })
-  }, [selectedPegawai?.id])
+  useIonViewDidEnter(() => {
+    fetchPegawai()
 
+  })
 
-  const checkPresent = useCallback((): boolean => {
-
-    if (presensi.length === 0) {
-      console.log('1')
-      return true;
-    }
-
-    if (presensi[presensi.length - 1].jenis === 1 && Moment.hour() < 12) {
-      console.log('2')
-      return false
-    }
-
-    if (presensi[presensi.length - 1].jenis === 2 && Moment.hour() > 12 && Moment.hour() < 13) {
-      console.log('3')
-      return false
-    }
-
-    if (presensi[presensi.length - 1].jenis === 3 && Moment.hour() > 14) {
-      console.log('4')
-      return false
-    }
-
-    return true;
-  }
-    , [presensi.length])
   useIonViewDidLeave(() => {
+    setPegawaiList(undefined);
+    setPresensi([]);
     setSelectedPegawai(undefined);
   })
 
-
-  useEffect(() => {
-    fetchPegawai()
-
-    return () => {
-      setPegawaiList([]);
-      setPresensi([]);
-      setSelectedPegawai(undefined);
-    }
-  }, [fetchPegawai])
-
+  const CallbackAfterPresensi = useCallback((data: any) => {
+    console.log(data)
+    setPresensi(prev => [...prev, data])
+  }, [])
 
   return (
     <IonPage className="pageContainer">
@@ -159,18 +100,20 @@ const Tab1: React.FC = () => {
       </IonHeader>
       <IonContent fullscreen>
         <IonGrid>
-          <IonRow>
-            <IonCol>
-              <IonText className='ion-text-center'>
-                <p>Form</p>
-              </IonText>
-            </IonCol>
-          </IonRow>
           <IonRow class='ion-justify-content-center ion-align-items-center'>
             <IonList>
               <IonItem>
                 <IonLabel>Pilih Pegawai</IonLabel>
-                <IonSelect value={selectedPegawai?.id || 0} class='ion-width-max' onIonChange={selectPegawai}  >
+                <IonSelect
+                  onIonDismiss={() => {
+                    if (selectedPegawaiId === 0) {
+                      return NotifToaster('top', 'Pegawai Belum Dipilih', 'danger')
+                    }
+                    selectPegawai()
+                  }}
+                  value={setSelectedPegawaiId}
+                  class='ion-width-max'
+                  onIonChange={(e) => setSelectedPegawaiId(e.target.value)}  >
                   {pegawaiList?.map((row: IPegawaiResponse, i) => <IonSelectOption key={++i} value={row.id}>{row.fullname}</IonSelectOption>)}
                 </IonSelect>
               </IonItem>
@@ -187,77 +130,19 @@ const Tab1: React.FC = () => {
                     </IonCardTitle>
                   </IonCardHeader>
                   <IonCardContent color={'primary'}>
-                    {selectedPegawai && selectedPegawai?.id
-                      ? <>
-                        <IonItem lines="none">
-                          <IonAvatar slot="start">
-                            <IonImg
-                              onIonError={() => {
-                                NotifToaster('top', 'Foto gagal dimuat', 'danger');
-                                setLoading(false);
-                              }}
-                              onIonImgDidLoad={() => setLoading(false)}
-                              onIonImgWillLoad={() => setLoading(true)}
-                              src={selectedPegawai?.photos} alt='foto' />
-                          </IonAvatar>
-                          <IonIcon
-                            slot="end"
-                            icon={informationCircleOutline}
-                            size="large"
-                            class="ion-no-margin"
-                          ></IonIcon>
-                          <IonLabel>
-                            {selectedPegawai?.fullname}
-                            <p>{jabatan(selectedPegawai.jabatan_id)}</p>
-                          </IonLabel>
-                        </IonItem>
-                        <IonItem>
-                          <IonGrid>
-                            <IonRow class='ion-justify-content-center'>
-                              <Clock format={'HH:mm:ss'} ticking={true} timezone={'Asia/Bangkok'} />
-                            </IonRow>
-                          </IonGrid>
-                        </IonItem>
-                        {!checkPresent()
-                          ? <IonItem>
-                            <IonGrid>
-                              <IonRow class='ion-justify-content-center'>
-                                <IonText color={'success'}>Anda Sudah Presensi</IonText>
-                              </IonRow>
-                            </IonGrid>
-                          </IonItem>
-                          : <div className="action">
-                            <IonButton
-                              fill={'outline'}
-                              color={'tertiary'}
-                              onClick={saveSesi}
-                              shape="round"
-                              class="accept"
-                              mode="ios">
-                              Presensi
-                            </IonButton>
-                            {/* <IonButton
-                              shape="round"
-                              fill="outline"
-                              color="danger"
-                              mode="ios"
-                            >
-                              Absen
-                            </IonButton> */}
-                          </div>
-                        }
-                      </>
+                    {selectedPegawai?.id
+                      ? <FormPresensi pegawai={selectedPegawai} presensi={presensi} callback={CallbackAfterPresensi} />
                       : <IonText><strong> Pegawai Belum Di Pilih</strong></IonText>}
                   </IonCardContent>
                 </IonCard>
               </div>
             </IonCol>
           </IonRow>
-          <IonRow class='ion-justify-content-center'>
-            {spinner ? <IonSpinner /> : ''}
-          </IonRow>
           <div id="FG6pmT3dZ2uqd9PWnlWo">
             <IonGrid class="ion-no-padding">
+              <center>
+                <IonText>Riwayat Presensi Anda</IonText>
+              </center>
               <IonRow>
                 <div className="widget">
                   <div className="ion-padding-horizontal ion-no-padding-vertical">

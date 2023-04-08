@@ -2,8 +2,8 @@ import sun from '../assets/icon/sun.png'
 import sunrise from '../assets/icon/sunrise.png'
 import sunset from '../assets/icon/sunset.png'
 
-export function sesiAben(sesi: 1 | 2 | 3) {
-    const session = ['', 'Datang', 'Siang', 'Pulang'];
+export function sesiAben(sesi: 1 | 2 | 3 | 4 | 5) {
+    const session = ['', 'Datang', 'Siang', 'Pulang', 'Masuk (Shift Malam)', 'Pulang (Shift Malam)'];
     return session[sesi];
 }
 
@@ -12,8 +12,8 @@ export const jabatan = (jabId: number): string => {
     return jabatanList[jabId];
 }
 
-export function imgSesi(sesi: 1 | 2 | 3) {
-    const imgs = ['', sunrise, sun, sunset]
+export function imgSesi(sesi: 1 | 2 | 3 | 4 | 5) {
+    const imgs = ['', sunrise, sun, sunset, sunset, sunrise]
     return imgs[sesi]
 }
 
@@ -46,6 +46,20 @@ export function setSesiNama(hour: number) {
 
     if (hour > 16) {
         return 'Pulang';
+    }
+}
+
+export function sesiColor(hour: number) {
+    switch (hour) {
+        case 1:
+            return 'success'
+            break;
+        case 2:
+            return 'warning'
+            break
+        default:
+            return 'danger'
+            break;
     }
 }
 
