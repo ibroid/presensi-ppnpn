@@ -12,10 +12,6 @@ import {
 	useIonToast,
 	ToastOptions,
 	useIonActionSheet,
-	useIonViewDidEnter,
-	IonRadioGroup,
-	IonRadio,
-	IonCheckbox,
 	ActionSheetButton
 } from "@ionic/react";
 
@@ -30,7 +26,6 @@ import { useCallback } from "react";
 import { supabase } from '../utils/SupabaseClient';
 import Clock from 'react-live-clock';
 import moment from 'moment';
-import { IPegawaiResponse, IPresensiResponse } from "../interfaces/IResponse";
 import { IFormPresensiProp } from "../interfaces/IProps";
 
 
@@ -50,42 +45,51 @@ export default function FormPresensi({ pegawai, presensi, callback }: IFormPrese
 	useEffect(() => {
 
 		if (presensi.length === 0) {
-			setPresentSessionStatus(true);
+			console.log("User Belum ada Presensi")
+			return setPresentSessionStatus(true);
 		}
 
 		if (Moment.hour() <= 8 && Moment.hour() >= 5) {
 			if (presensi[presensi.length - 1].jenis === 1) {
-				setPresentSessionStatus(false);
+				console.log("User udah presensi pagi")
+				return setPresentSessionStatus(false);
 			} else {
-				setPresentSessionStatus(true);
+				console.log("User belum presensi pagi")
+				return setPresentSessionStatus(true);
 			}
 		}
 
 		if (Moment.hour() >= 12 && Moment.hour() <= 13) {
 			if (presensi[presensi.length - 1].jenis === 2) {
-				setPresentSessionStatus(false);
+				console.log("User udah presensi siang")
+				return setPresentSessionStatus(false);
 			} else {
-				setPresentSessionStatus(true);
+				console.log("User belum presensi siang")
+				return setPresentSessionStatus(true);
 			}
 		}
 
 		if (Moment.hour() >= 15 && Moment.hour() <= 20) {
 			if (presensi[presensi.length - 1].jenis === 3) {
-				setPresentSessionStatus(false);
+				console.log("User udah presensi malam")
+				return setPresentSessionStatus(false);
 			} else {
-				setPresentSessionStatus(true);
+				console.log("User belum presensi malam")
+				return setPresentSessionStatus(true);
 			}
 		}
 
 		if (Moment.hour() >= 20 && Moment.hour() <= 23) {
 			if (presensi[presensi.length - 1].jenis === 4) {
-				setPresentSessionStatus(false);
+				console.log("User udah presensi masuk malam")
+				return setPresentSessionStatus(false);
 			} else {
-				setPresentSessionStatus(true);
+				console.log("User belu presensi masuk malam")
+				return setPresentSessionStatus(true);
 			}
 		}
 
-	}, [pegawai.id])
+	}, [pegawai.id, presensi.length])
 
 	const NotifToaster = useCallback((position: 'top' | 'middle' | 'bottom', message: string, color: ToastOptions["color"]) => {
 		presentToast({
