@@ -22,7 +22,7 @@ export interface IPresensiResponse {
     tanggal: string;
     updated_at: null | string;
     waktu: string;
-    jenis: 1 | 2 | 3
+    jenis: 1 | 2 | 3 | 4 | 5
 }
 
 export interface IPresensiWithPpnpnResponse {
@@ -36,4 +36,14 @@ export interface IPresensiWithPpnpnResponse {
     waktu: string;
     jenis: 1 | 2 | 3;
     ppnpn: IPegawaiResponse
+}
+
+export interface IPpnpnWithPresensi {
+    "id": number,
+    "fullname": string,
+    "jabatan_id": number,
+    "created_at": Date,
+    "updated_at": null | Date,
+    "photos": string,
+    presensi: IPresensiResponse[]
 }
