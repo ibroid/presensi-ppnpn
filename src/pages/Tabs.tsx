@@ -17,7 +17,7 @@ import Details from "./Details";
 const Tabs: React.FC = () => {
 	return (
 		<IonTabs>
-			<IonRouterOutlet>
+			<IonRouterOutlet >
 				<Route exact path={'/app/tab1'} component={Tab1} />
 				<Route exact path={'/app/tab2'} component={Tab2} />
 				<Route exact path={'/app/tab3'} component={Tab3} />

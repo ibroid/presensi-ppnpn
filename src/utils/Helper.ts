@@ -57,6 +57,9 @@ export function sesiColor(hour: number) {
         case 2:
             return 'warning'
             break
+        case 4:
+            return 'primary'
+            break
         default:
             return 'danger'
             break;

@@ -3,59 +3,138 @@ import {
 	IonBackButton,
 	IonButton,
 	IonButtons,
-	IonCard,
-	IonCardContent,
-	IonCardHeader,
-	IonCol,
 	IonContent,
-	IonGrid,
 	IonHeader,
-	IonIcon,
+	IonItem,
+	IonLabel,
 	IonPage,
 	IonRow,
+	IonSelect,
+	IonSelectOption,
 	IonText,
 	IonTitle,
 	IonToolbar,
-	useIonToast,
-	useIonViewDidEnter
+	useIonViewDidEnter,
 } from "@ionic/react"
-import "../style/details.css";
-import { chatbubbleOutline } from "ionicons/icons";
+
 import { RouteComponentProps } from "react-router";
 import { supabase } from "../utils/SupabaseClient";
-import { useState } from "react";
+import {
+	useCallback,
+	useMemo,
+	useState
+} from "react";
+
 import { jabatan } from "../utils/Helper";
+
+import moment from "moment";
+import { usePegawai } from "../hooks/usePegawai";
+import PresensiList from "../components/PresensiList";
 
 interface UserDetailPageProps
 	extends RouteComponentProps<{
 		id: string;
 	}> { }
 
+
 const Details: React.FC<UserDetailPageProps> = ({ match }) => {
 
-	const [NotifToaster] = useIonToast();
-	const [pegawai, setPegawai] = useState<any>();
+	const { pegawai } = usePegawai({ pegawaiId: parseFloat(match.params.id) })
 
-	useIonViewDidEnter(() => {
-		const bootstrapping = async () => {
-			const { data, error } = await supabase.from('ppnpn').select('*').eq('id', match.params.id).single()
-			if (error) {
-				NotifToaster({
-					message: 'Terjadi Kesalahan. ' + error.message,
-					duration: 2000,
-					position: 'top'
-				})
-			}
-
-			if (data) {
-				setPegawai(data)
-			}
-		}
-		bootstrapping()
+	const [selectedYear, setSelectedYear] = useState(2023);
+	const [selectedMonth, setSelectedMonth] = useState(() => {
+		return moment(new Date).month();
 	})
 
+	const [years] = useState<number[]>(() => {
+		const Momment = moment(new Date).locale('id');
+
+		const yearsSet = [];
+		for (let i = 1; i >= 0; i--) {
+			yearsSet.push(Momment.year() - i);
+		}
+
+		return yearsSet;
+	});
+
+	// const hapusDataPresensi = useCallback(
+	// 	(id: number) => {
+	// 		prompt({
+	// 			header: 'Apa anda yakin ?',
+	// 			buttons: [
+	// 				{
+	// 					text: 'Batal',
+	// 					role: 'cancel',
+	// 				},
+	// 				{
+	// 					text: 'Yakin',
+	// 					role: 'confirm',
+	// 					handler: async () => {
+	// 						const { data, error } = await supabase.from('ppnpn').delete().eq('id', id);
+	// 						if (error) {
+	// 							NotifToaster({
+	// 								message: 'Terjadi Kesalahan. ' + error.message,
+	// 								duration: 2000,
+	// 								position: 'top',
+	// 								color: 'danger'
+	// 							})
+	// 						}
+	// 					},
+	// 				},
+	// 			],
+	// 		})
+	// 	}
+	// 	, [])
+
+	// const UbahPresensi = useCallback(async (id: number) => {
+	// 	actionSheet({
+	// 		header: 'Ubah Status Presensi Anda',
+	// 		buttons: [
+	// 			{
+	// 				text: 'Ubah ke Presensi Datang (Pagi)',
+	// 				handler() {
+
+	// 				},
+	// 			},
+	// 			{
+	// 				text: 'Ubah ke Presensi Siang',
+	// 				handler() {
+
+	// 				},
+	// 			},
+	// 			{
+	// 				text: 'Ubah ke Presensi Pulang (Sore)',
+	// 				handler() {
+
+	// 				},
+	// 			},
+	// 			{
+	// 				text: 'Ubah ke Presensi Datang (Shift Malam)',
+	// 				handler() {
+
+	// 				},
+	// 			},
+	// 			{
+	// 				text: 'Ubah ke Presensi Pulang (Pagi)',
+	// 				handler() {
+
+	// 				},
+	// 			},
+	// 			{
+	// 				text: 'Hapus Presensi Ini',
+	// 				icon: trash,
+	// 				role: 'destructive',
+	// 				handler() {
+	// 					hapusDataPresensi(id)
+	// 				},
+	// 			}
+	// 		],
+	// 		onDidDismiss: ({ detail }) => console.log(detail),
+	// 	})
+	// }, []);
+
 	return (
-		<IonPage>
+		<IonPage className="pageContainer">
 			<IonHeader>
 				<IonToolbar color={'tertiary'}>
 					<IonButtons slot="start">
@@ -65,63 +144,43 @@ const Details: React.FC<UserDetailPageProps> = ({ match }) => {
 				</IonToolbar>
 			</IonHeader>
 			<IonContent className="ion-padding">
-				<div id="Pw9uiFXE8bJTD0uxttda">
-					<IonGrid class="ion-no-padding">
-						<IonRow>
-							<IonCol size="12">
-								<IonCard class="card">
-									<IonCardHeader class="ion-no-padding" color={'success'}>
-									</IonCardHeader>
-									<IonCardContent>
-										<IonRow>
-											<IonCol size="12">
-												<div className="profile ion-text-center">
-													<div className="img">
-														<IonAvatar class="large">
-															<img
-																alt="person's pic"
-																src={pegawai?.photos}
-															/>
-														</IonAvatar>
-													</div>
-													<div className="name">
-														<IonText class="ion-margin-top  ion-text-nowrap">
-															<span className="title">{pegawai?.fullname}</span>
-														</IonText>
-														<IonText class="ion-margin-bottom  ion-text-nowrap">
-															<span className="sub-title">{jabatan(pegawai?.jabatan_id)}</span>
-														</IonText>
-													</div>
-													<div className="action">
-														<IonButton
-															fill="solid"
-															color="warning`"
-															shape="round"
-															mode="ios"
-															size="small"
-														>
-															Riwayat Bulan Ini
-														</IonButton>
-														<IonButton
-															class="ion-no-padding"
-															fill="outline"
-															color="medium"
-															shape="round"
-															mode="ios"
-															size="small"
-														>
-															<IonIcon icon={chatbubbleOutline}></IonIcon>
-														</IonButton>
-													</div>
-												</div>
-											</IonCol>
-										</IonRow>
-									</IonCardContent>
-								</IonCard>
-							</IonCol>
-						</IonRow>
-					</IonGrid>
-				</div>
+				<IonItem className="ion-margin-bottom">
+					<IonLabel>
+						<h1>{pegawai?.data?.fullname}</h1>
+						<p> {jabatan(pegawai?.data?.jabatan_id as number)}</p>
+					</IonLabel>
+					<IonAvatar>
+						<img
+							alt="person's pic"
+							src={pegawai?.data?.photos}
+						/>
+					</IonAvatar>
+				</IonItem>
+				<IonRow className="ion-justify-content-center">
+					<IonText>Lihat Riwayat Presensi Berdasarkan Periode</IonText>
+				</IonRow>
+				<IonSelect
+					value={selectedMonth}
+					aria-label="Pilih Bulan"
+					placeholder="Pilih Periode Bulan"
+					className="ion-margin-top"
+					onIonChange={(e) => setSelectedMonth(e.target.value)}>
+					{moment.months().map((row, i) => <IonSelectOption key={++i} value={i}>{row}</IonSelectOption>)}
+				</IonSelect>
+				<IonSelect
+					value={selectedYear}
+					placeholder="Pilih Periode Tahun"
+					className="ion-margin-top"
+					onIonChange={(e) => setSelectedYear(e.target.value)}>
+					{years.map((row, i) => <IonSelectOption key={++i} value={row}>{row}</IonSelectOption>)}
+				</IonSelect>
+				<IonButton expand="block" className="ion-margin">Tampilkan</IonButton>
+				<PresensiList
+					month={selectedMonth}
+					year={selectedYear}
+					pegawaiId={parseInt(match.params.id)}
+				/>
+
 			</IonContent>
 		</IonPage>
 	)
