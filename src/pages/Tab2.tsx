@@ -1,72 +1,79 @@
-import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonDatetime, IonGrid, IonRow, IonItem, IonAvatar, IonLabel, IonCol, useIonViewDidEnter, useIonToast, IonSegment, IonSegmentButton, useIonLoading, useIonViewDidLeave, IonText } from '@ionic/react';
+import {
+  IonContent,
+  IonHeader,
+  IonPage,
+  IonTitle,
+  IonToolbar,
+  IonDatetime,
+  IonGrid,
+  IonRow,
+  IonItem,
+  IonAvatar,
+  IonLabel,
+  useIonViewDidEnter,
+  useIonToast,
+  IonText,
+  useIonViewWillLeave
+} from '@ionic/react';
+
 import { Virtuoso } from 'react-virtuoso';
-import '../components/ExploreContainer.css'
+import { supabase } from '../utils/SupabaseClient';
+import { useState } from 'react';
+import { IPresensiResponse } from '../interfaces/IResponse';
+import { sesiColor } from '../utils/Helper';
+import moment, { Moment } from 'moment';
+
 import './Tab2.css';
 import '../global.css';
-import { supabase } from '../utils/SupabaseClient';
-import moment, { Moment } from 'moment';
-import { useEffect, useState } from 'react';
 import 'moment/locale/id';
-import { IPpnpnWithPresensi, IPresensiResponse, IPresensiWithPpnpnResponse } from '../interfaces/IResponse';
-import { sesiColor } from '../utils/Helper';
 
 const Tab2: React.FC = () => {
 
   const [NotifToaster] = useIonToast();
   const [loading, setLoading] = useState<boolean>(false);
-  const [presensiList, setPresensiList] = useState<any[]>([]);
   const [presensiShowList, setPresensiShowList] = useState<any[]>([]);
-  const [present, dismiss] = useIonLoading();
-  const [selectedSesi, setSelectedSesi] = useState<'1' | '2' | '3'>('1');
+  const [leaveStatus, setLeaveStatus] = useState<boolean>(false);
 
-  const [Moment, setMoment] = useState<Moment>(() => {
+  const [Moment] = useState<Moment>(() => {
     return moment(Date.now()).locale('id');
   });
 
+  let abortController: { signal: AbortSignal; abort: () => void; };
+
   useIonViewDidEnter(() => {
-    const bootstrapping = async () => {
-      setLoading(true);
-      const { data, error } = await supabase.from('ppnpn')
-        .select('*, presensi(*)', { count: 'planned' })
-        .eq('presensi.tanggal', Moment.format('Y-M-D'))
-      if (error) {
-        NotifToaster({
-          message: 'Terjadi Kesalahan. ' + error.message,
-          duration: 2000,
-          position: 'top',
-          color: 'danger'
-        })
-      }
+    setLoading(true);
+    abortController = new AbortController();
+    supabase.from('ppnpn')
+      .select('*, presensi(*)', { count: 'planned' })
+      .eq('presensi.tanggal', Moment.format('Y-M-D'))
+      .abortSignal(abortController.signal)
+      .then(({ data, error }) => {
 
-      if (data) {
-        console.log(data)
-        setPresensiShowList(data);
-      }
-      setLoading(false);
-    }
-    bootstrapping()
-  });
+        if (error && !leaveStatus) {
+          NotifToaster({
+            message: 'Terjadi Kesalahan. ' + error.message,
+            duration: 2000,
+            position: 'top',
+            color: 'danger'
+          })
+        }
 
-  useIonViewDidLeave(() => {
+        if (data && !leaveStatus) {
+          setPresensiShowList(data);
+        }
+
+        setLoading(false)
+      })
+
+  }, []);
+
+  useIonViewWillLeave(() => {
+    abortController.abort()
+    setLeaveStatus(true);
     setLoading(false);
-    setPresensiList([]);
     setPresensiShowList([]);
   })
 
-  useEffect(() => {
-    if (loading) {
-      present({
-        message: 'Loading...',
-        spinner: 'circles',
-        // duration: 5000
-      });
-    } else {
-      setTimeout(() => {
-        dismiss();
-      }, 1000);
-    }
-
-  }, [loading])
 
   return (
     <IonPage className="pageContainer">
@@ -97,10 +104,12 @@ const Tab2: React.FC = () => {
                 if (data) {
                   setPresensiShowList(data);
                 }
-                setSelectedSesi('1');
                 setLoading(false);
               }}
               presentation="date" color={"primary"} showDefaultTimeLabel={false}></IonDatetime>
+          </IonRow>
+          <IonRow className='ion-justify-content-center'>
+            {loading ? <IonText><h1> Loading...</h1></IonText> : <></>}
           </IonRow>
         </IonGrid>
         <Virtuoso
