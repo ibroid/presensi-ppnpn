@@ -14,14 +14,10 @@ import {
 	IonText,
 	IonTitle,
 	IonToolbar,
-	useIonViewDidEnter,
 } from "@ionic/react"
 
 import { RouteComponentProps } from "react-router";
-import { supabase } from "../utils/SupabaseClient";
 import {
-	useCallback,
-	useMemo,
 	useState
 } from "react";
 
@@ -57,81 +53,6 @@ const Details: React.FC<UserDetailPageProps> = ({ match }) => {
 		return yearsSet;
 	});
 
-	// const hapusDataPresensi = useCallback(
-	// 	(id: number) => {
-	// 		prompt({
-	// 			header: 'Apa anda yakin ?',
-	// 			buttons: [
-	// 				{
-	// 					text: 'Batal',
-	// 					role: 'cancel',
-	// 				},
-	// 				{
-	// 					text: 'Yakin',
-	// 					role: 'confirm',
-	// 					handler: async () => {
-	// 						const { data, error } = await supabase.from('ppnpn').delete().eq('id', id);
-	// 						if (error) {
-	// 							NotifToaster({
-	// 								message: 'Terjadi Kesalahan. ' + error.message,
-	// 								duration: 2000,
-	// 								position: 'top',
-	// 								color: 'danger'
-	// 							})
-	// 						}
-	// 					},
-	// 				},
-	// 			],
-	// 		})
-	// 	}
-	// 	, [])
-
-	// const UbahPresensi = useCallback(async (id: number) => {
-	// 	actionSheet({
-	// 		header: 'Ubah Status Presensi Anda',
-	// 		buttons: [
-	// 			{
-	// 				text: 'Ubah ke Presensi Datang (Pagi)',
-	// 				handler() {
-
-	// 				},
-	// 			},
-	// 			{
-	// 				text: 'Ubah ke Presensi Siang',
-	// 				handler() {
-
-	// 				},
-	// 			},
-	// 			{
-	// 				text: 'Ubah ke Presensi Pulang (Sore)',
-	// 				handler() {
-
-	// 				},
-	// 			},
-	// 			{
-	// 				text: 'Ubah ke Presensi Datang (Shift Malam)',
-	// 				handler() {
-
-	// 				},
-	// 			},
-	// 			{
-	// 				text: 'Ubah ke Presensi Pulang (Pagi)',
-	// 				handler() {
-
-	// 				},
-	// 			},
-	// 			{
-	// 				text: 'Hapus Presensi Ini',
-	// 				icon: trash,
-	// 				role: 'destructive',
-	// 				handler() {
-	// 					hapusDataPresensi(id)
-	// 				},
-	// 			}
-	// 		],
-	// 		onDidDismiss: ({ detail }) => console.log(detail),
-	// 	})
-	// }, []);
 
 	return (
 		<IonPage className="pageContainer">
@@ -174,7 +95,7 @@ const Details: React.FC<UserDetailPageProps> = ({ match }) => {
 					onIonChange={(e) => setSelectedYear(e.target.value)}>
 					{years.map((row, i) => <IonSelectOption key={++i} value={row}>{row}</IonSelectOption>)}
 				</IonSelect>
-				<IonButton expand="block" className="ion-margin">Tampilkan</IonButton>
+				{/* <IonButton expand="block" className="ion-margin">Tampilkan</IonButton> */}
 				<PresensiList
 					month={selectedMonth}
 					year={selectedYear}

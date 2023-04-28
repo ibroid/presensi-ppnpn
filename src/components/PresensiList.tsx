@@ -1,6 +1,16 @@
-import { IonItemGroup, IonItemDivider, IonLabel, IonAccordionGroup, IonAccordion, IonItem, IonText } from "@ionic/react";
-import { IPresensiDetail, IPresensiListProp } from "../interfaces/IProps";
-import { useCallback, useEffect, useRef, useState } from "react";
+import {
+	IonLabel,
+	IonAccordionGroup,
+	IonAccordion,
+	IonItem,
+	IonText
+} from "@ionic/react";
+import { IPresensiListProp } from "../interfaces/IProps";
+import {
+	useCallback,
+	useEffect,
+	useState
+} from "react";
 import moment from "moment";
 import PresensiListByDate from "./PresensiListByDate";
 
@@ -24,13 +34,10 @@ export default function PresensiList(prop: IPresensiListProp) {
 
 		setDates(arrDays);
 
-		console.log('ok render')
-
-	}, []);
+	}, [prop.year, prop.month]);
 
 	const SetExpanded = useCallback((e: any) => {
 		setExpandedPosition(e.detail.value)
-		// console.log(e.detail.value)
 	}, [])
 
 
