@@ -4,5 +4,12 @@
     "capacitor": {}
   },
   "type": "react",
-  "id": "e60c8cd4"
+  "id": "e60c8cd4",
+  "assets": [
+    {
+      "glob": "**/*.woff2",
+      "input": "src/assets/fonts",
+      "output": "/assets/fonts/"
+    }
+  ]
 }

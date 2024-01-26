@@ -246,7 +246,7 @@ export default function FormPresensi({ pegawai }: IFormPresensiProp) {
 									slot="end"
 									icon={informationCircleOutline}
 									size="large"
-									class="ion-no-margin"
+									className="ion-no-margin"
 								></IonIcon>
 								<IonLabel>
 									{pegawai?.fullname}
@@ -276,7 +276,7 @@ export default function FormPresensi({ pegawai }: IFormPresensiProp) {
 											color={'success'}
 											onClick={PopUpPilihSesi}
 											shape="round"
-											class="accept"
+											className="accept"
 											mode="ios">
 											{buttonSelectSesiText}
 										</IonButton>
@@ -287,7 +287,7 @@ export default function FormPresensi({ pegawai }: IFormPresensiProp) {
 											color={'tertiary'}
 											onClick={saveSesi}
 											shape="round"
-											class="accept"
+											className="accept"
 											mode="ios"
 											disabled={jenisSesiPresensi === 0 ? true : false}
 										>

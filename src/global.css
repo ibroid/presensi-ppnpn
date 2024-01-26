@@ -1,3 +1,28 @@
+@import url("https://fonts.googleapis.com/css2?family=Rubik:wght@300;400&display=swap");
+
+:root {
+  --ion-color-rose: #ffc0e5;
+  --ion-color-rose-rgb: 255, 192, 203;
+  --ion-color-rose-contrast: #6a0567;
+  --ion-color-rose-contrast-rgb: 0, 0, 0;
+  --ion-color-rose-shade: #e6a8b7;
+  --ion-color-rose-tint: #ffd1d9;
+
+  --ion-color-violet: #e0c3fc;
+  --ion-color-violet-rgb: 224, 195, 252;
+  --ion-color-violet-contrast: #6a0567;
+  --ion-color-violet-contrast-rgb: 0, 0, 0;
+  --ion-color-violet-shade: #c6a8e6;
+  --ion-color-violet-tint: #e5d0fd;
+
+  --ion-color-skyblue: #87ceeb;
+  --ion-color-skyblue-rgb: 135, 206, 235;
+  --ion-color-skyblue-contrast: #062672;
+  --ion-color-skyblue-contrast-rgb: 0, 0, 0;
+  --ion-color-skyblue-shade: #6fb3d4;
+  --ion-color-skyblue-tint: #99d4ec;
+}
+
 .ion-color-rose {
   --ion-color-base: var(--ion-color-rose);
   --ion-color-base-rgb: var(--ion-color-rose-rgb);
@@ -7,8 +32,26 @@
   --ion-color-tint: var(--ion-color-rose-tint);
 }
 
+.ion-color-violet {
+  --ion-color-base: var(--ion-color-violet);
+  --ion-color-base-rgb: var(--ion-color-violet-rgb);
+  --ion-color-contrast: var(--ion-color-violet-contrast);
+  --ion-color-contrast-rgb: var(--ion-color-violet-contrast-rgb);
+  --ion-color-shade: var(--ion-color-violet-shade);
+  --ion-color-tint: var(--ion-color-violet-tint);
+}
+
+.ion-color-skyblue {
+  --ion-color-base: var(--ion-color-skyblue);
+  --ion-color-base-rgb: var(--ion-color-skyblue-rgb);
+  --ion-color-contrast: var(--ion-color-skyblue-contrast);
+  --ion-color-contrast-rgb: var(--ion-color-skyblue-contrast-rgb);
+  --ion-color-shade: var(--ion-color-skyblue-shade);
+  --ion-color-tint: var(--ion-color-skyblue-tint);
+}
+
 ion-datetime {
-  --background: #E1EAF6;
+  --background: #e1eaf6;
   --background-rgb: 42, 115, 138;
 
   border-radius: 16px;
@@ -20,8 +63,13 @@ ion-datetime {
   width: 100%;
   max-width: 480px;
   margin: 0 auto;
+  background-color: white;
+}
+body {
+  background-color: azure;
 }
 
-body {
-  background-color: azure
+html {
+  --ion-dynamic-font: var(--ion-default-dynamic-font);
+  --ion-font-family: "Rubik", sans-serif;
 }

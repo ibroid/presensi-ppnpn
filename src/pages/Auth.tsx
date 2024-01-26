@@ -3,23 +3,26 @@ import {
 	IonButton,
 	IonCol,
 	IonContent,
+	IonFooter,
 	IonGrid,
 	IonHeader,
 	IonIcon,
 	IonImg,
 	IonInput,
 	IonItem,
+	IonItemDivider,
+	IonList,
 	IonPage,
 	IonRow,
 	IonText,
+	IonTitle,
 	IonToolbar,
 	// useIonViewDidEnter,
 	useIonLoading,
 	useIonRouter
 } from "@ionic/react";
-import { chevronBackOutline } from "ionicons/icons";
+import { chevronBackOutline, create, eye, logIn, save } from "ionicons/icons";
 
-import "../style/auth.css";
 import { FormEvent, useContext, useState } from "react";
 import { supabase } from "../utils/SupabaseClient";
 import { useHistory } from "react-router-dom";
@@ -79,7 +82,7 @@ const Auth: React.FC = () => {
 	}
 
 	return (
-		<IonPage>
+		<IonPage className="pageContainer">
 			<IonAlert
 				isOpen={open}
 				onDidDismiss={() => setOpen(false)}
@@ -87,101 +90,57 @@ const Auth: React.FC = () => {
 				message={notifMessage}
 				buttons={['Ok']}
 			/>
-			<IonHeader
-				mode="md"
-				class="ion-no-padding ion-no-margin ion-no-border ion-hide-sm-up"
-			>
-				<IonToolbar>
-					<div className="ion-text-center">
-						<IonText>Selamat Datang</IonText>
-					</div>
+			<IonHeader >
+				<IonToolbar color="tertiary">
+					<IonTitle>Login Pengguna</IonTitle>
 				</IonToolbar>
 			</IonHeader>
-			<IonContent id="TIapJnqAtCEtfhCAtRzm">
-				<div className="ion-text-center">
-					<h2 className="ion-padding-0"><strong>Aplikasi Presensi PPNPN</strong></h2>
-					<h5 className="ion-padding-0">Pengadilan Agama Jakarta Utara</h5>
-				</div>
-				<div className="login-bg">
-					<IonGrid class="ion-no-padding">
-						<IonRow class="ion-justify-content-center">
-							<IonCol
-								class="card"
-								size="12"
-								size-sm="6"
-								size-md="4"
-								size-lg="3"
-							>
-								<form onSubmit={(e) => handleSubmit(e)}>
-									<IonRow class="ion-padding-vertical ion-hide-sm-down">
-										<IonCol size="12">
-											<IonButton
-												color="primary"
-												fill="clear"
-												class="ion-no-padding ion-no-margin"
-											>
-												<IonIcon icon={chevronBackOutline}></IonIcon>
-											</IonButton>
-										</IonCol>
-									</IonRow>
-									<IonRow>
-										<IonCol size="12">
-											<IonImg
-												src="https://cdn-icons-png.flaticon.com/512/5968/5968331.png"
-												class="logo"
-												alt="Company Logo"
-											></IonImg>
-										</IonCol>
-									</IonRow>
-									<IonRow>
-										<IonCol size="12">
-											<h1 className="title ion-text-center ion-margin-bottom center">
-												Silahkan Masuk
-											</h1>
-										</IonCol>
-									</IonRow>
-									<IonRow>
-										<IonCol size="12">
-											<IonItem >
-												<IonInput
-													type="text"
-													value={phone}
-													onIonChange={e => setPhone(String(e.target.value))}
-													placeholder="Masukan Nomor Telepon"
-												></IonInput>
-											</IonItem>
-										</IonCol>
-									</IonRow>
-									<IonRow class="ion-margin-top">
-										<IonCol size="12">
-											<IonRow class="ion-margin-bottom">
-												<IonCol size="12">
-													<IonButton
-														type="submit"
-														fill="solid"
-														color="primary"
-														class="login-button ion-text-capitalize ion-no-margin"
-													>
-														Masuk
-													</IonButton>
-												</IonCol>
-											</IonRow>
-										</IonCol>
-									</IonRow>
-									<IonRow class="ion-margin-vertical ion-justify-content-between">
-										<IonCol size="12">
-											<IonText color="medium" class="ion-text-center">
-												<h6>Daftar Bisa Disni</h6>
-											</IonText>
-											<IonButton onClick={() => history.push('/register')} fill="outline" expand="block">Daftar</IonButton>
-											<IonButton onClick={debugLogin} fill="outline" expand="block">Login Debug</IonButton>
-										</IonCol>
-									</IonRow>
-								</form>
-							</IonCol>
-						</IonRow>
-					</IonGrid>
-				</div>
+			<IonContent fullscreen className="ion-padding">
+				<IonGrid fixed={true}>
+					<IonRow>
+						<IonText>
+							<h1>Selamat Datang di Aplikasi Presensi PPNPN</h1>
+						</IonText>
+					</IonRow>
+				</IonGrid>
+				<IonText>
+					<h4>Silahkan login untuk melanjutkan 🖥️</h4>
+				</IonText>
+				<IonList className="ion-margin-top">
+					<IonItem>
+						<IonInput label="Nomor HP :" type="number"></IonInput>
+					</IonItem>
+					<IonItem>
+						<IonInput label="Password :" type="password"></IonInput>
+					</IonItem>
+				</IonList>
+				<IonButton shape="round" expand="block" color={"tertiary"} className="ion-margin-top">
+					Masuk
+					<IonIcon slot="start" icon={logIn} className="ion-margin-end"></IonIcon>
+				</IonButton>
+				<IonItemDivider></IonItemDivider>
+				<IonButton
+					shape="round"
+					expand="block"
+					color={"skyblue"}
+					className="ion-margin-top"
+					routerLink="/register"
+
+				>
+					<strong> Daftar</strong>
+					<IonIcon
+						slot="start"
+						icon={create}
+						className="ion-margin-end"
+					></IonIcon>
+				</IonButton>
+
+				<IonText style={{ textAlign: 'center' }}>
+					<p>2024. Pengadilan Agama Jakarta Utara</p>
+					<p>
+						<a rel="noreferrer" target="_blank" href="https://mmaliki.my.id">Visit Developer</a>
+					</p>
+				</IonText>
 			</IonContent>
 		</IonPage >
 	);

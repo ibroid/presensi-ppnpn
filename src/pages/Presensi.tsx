@@ -66,7 +66,7 @@ const Tab1: React.FC = () => {
       <IonContent fullscreen>
         <IonGrid className='ion-margin-top'>
           <IonSelect
-            placeholder='Pilih Pegawai'
+            label='Pilih Pegawai :'
             onIonDismiss={selectPegawai}
             value={setSelectedPegawaiId}
             class='ion-width-max'

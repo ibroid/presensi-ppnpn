@@ -7,7 +7,7 @@ import {
 	IonTabButton
 } from "@ionic/react";
 import { Redirect, Route } from "react-router";
-import Tab1 from "./Tab1";
+import Tab1 from "./Presensi";
 import Tab2 from "./Tab2";
 import Tab3 from "./Tab3";
 import { calendar, location, statsChart } from "ionicons/icons";
@@ -28,7 +28,7 @@ const Tabs: React.FC = () => {
 			</IonRouterOutlet>
 
 			<IonTabBar slot="bottom" color={'tertiary'} className="footerContainer">
-				<IonTabButton tab="tab1" href="/app/tab1">
+				<IonTabButton tab="tab1" href="/app/presensi">
 					<IonIcon icon={location} />
 					<IonLabel>Presensi</IonLabel>
 				</IonTabButton>
