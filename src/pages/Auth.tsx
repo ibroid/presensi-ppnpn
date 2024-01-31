@@ -24,7 +24,6 @@ import {
 import { chevronBackOutline, create, eye, logIn, save } from "ionicons/icons";
 
 import { FormEvent, useContext, useState } from "react";
-import { supabase } from "../utils/SupabaseClient";
 import { useHistory } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 
@@ -51,19 +50,6 @@ const Auth: React.FC = () => {
 		})
 
 		try {
-			await supabase.from('ppnpn').select('*')
-			const { data, error } = await supabase.auth.signInWithPassword({ phone, password: 'kuyabatok' });
-
-			if (error) {
-				throw new Error(error.message);
-			}
-
-			const user = await supabase.from('ppnpn').select('*').eq('user_id', data.user?.id)
-			console.log(user);
-			if (data.session) {
-				deState.setToken(data.session.access_token, data.session.refresh_token);
-				history.push('/tab1')
-			}
 
 		} catch (error: any) {
 			setNotifMessage(prev => prev += String(error.message))

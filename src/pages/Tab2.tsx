@@ -17,7 +17,6 @@ import {
 } from '@ionic/react';
 
 import { Virtuoso } from 'react-virtuoso';
-import { supabase } from '../utils/SupabaseClient';
 import { useState } from 'react';
 import { IPresensiResponse } from '../interfaces/IResponse';
 import { sesiColor } from '../utils/Helper';
@@ -43,27 +42,7 @@ const Tab2: React.FC = () => {
   useIonViewDidEnter(() => {
     setLoading(true);
     abortController = new AbortController();
-    supabase.from('ppnpn')
-      .select('*, presensi(*)', { count: 'planned' })
-      .eq('presensi.tanggal', Moment.format('Y-M-D'))
-      .abortSignal(abortController.signal)
-      .then(({ data, error }) => {
 
-        if (error && !leaveStatus) {
-          NotifToaster({
-            message: 'Terjadi Kesalahan. ' + error.message,
-            duration: 2000,
-            position: 'top',
-            color: 'danger'
-          })
-        }
-
-        if (data && !leaveStatus) {
-          setPresensiShowList(data);
-        }
-
-        setLoading(false)
-      })
 
   }, []);
 
@@ -89,21 +68,6 @@ const Tab2: React.FC = () => {
               onIonChange={async (e) => {
                 const selectedDate = String(e.target.value).replace('T21:43:00+07:00', '')
                 setLoading(true);
-                const { data, error } = await supabase.from('ppnpn')
-                  .select('*, presensi(*)')
-                  .eq('presensi.tanggal', selectedDate)
-                if (error) {
-                  NotifToaster({
-                    message: 'Terjadi Kesalahan. ' + error.message,
-                    duration: 2000,
-                    position: 'top',
-                    color: 'danger'
-                  })
-                }
-
-                if (data) {
-                  setPresensiShowList(data);
-                }
                 setLoading(false);
               }}
               presentation="date" color={"primary"} showDefaultTimeLabel={false}></IonDatetime>

@@ -29,7 +29,6 @@ import {
 
 import { jabatan } from "../utils/Helper";
 import { useCallback } from "react";
-import { supabase } from '../utils/SupabaseClient';
 import Clock from 'react-live-clock';
 import moment from 'moment';
 import { IFormPresensiProp } from "../interfaces/IProps";
@@ -198,15 +197,7 @@ export default function FormPresensi({ pegawai }: IFormPresensiProp) {
 						text: 'Simpan',
 						icon: saveOutline,
 						async handler() {
-							const { data, error } = await supabase.from('presensi').insert(body).select('*').single()
-							if (error) {
-								NotifToaster('top', 'Silahkan Coba Lagi Nanti', 'danger')
-							}
 
-							if (data) {
-								NotifToaster('top', 'Berhasil', 'success')
-							}
-							setTimestamp(prev => prev + 1);
 						},
 					},
 					{

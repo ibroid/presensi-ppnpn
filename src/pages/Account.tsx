@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react'
-import { supabase } from '../utils/SupabaseClient'
 
 const Account = ({ session }: any) => {
     const [loading, setLoading] = useState(true)
@@ -15,22 +14,6 @@ const Account = ({ session }: any) => {
         try {
             setLoading(true)
             const { user } = session
-
-            let { data, error, status } = await supabase
-                .from('profiles')
-                .select(`username, website, avatar_url`)
-                .eq('id', user.id)
-                .single()
-
-            if (error && status !== 406) {
-                throw error
-            }
-
-            if (data) {
-                setUsername(data.username)
-                setWebsite(data.website)
-                setAvatarUrl(data.avatar_url)
-            }
         } catch (error: any) {
             alert(error.message)
         } finally {
@@ -53,11 +36,6 @@ const Account = ({ session }: any) => {
                 updated_at: new Date(),
             }
 
-            let { error } = await supabase.from('profiles').upsert(updates)
-
-            if (error) {
-                throw error
-            }
         } catch (error: any) {
             alert(error.message)
         } finally {
@@ -97,7 +75,7 @@ const Account = ({ session }: any) => {
                     </div>
                 </form>
             )}
-            <button type="button" className="button block" onClick={() => supabase.auth.signOut()}>
+            <button type="button" className="button block" onClick={() => { }}>
                 Sign Out
             </button>
         </div>

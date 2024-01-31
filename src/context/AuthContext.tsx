@@ -1,7 +1,6 @@
 import * as React from "react";
 import { IAuthContext } from "../interfaces/IContext";
 import { Storage } from "@ionic/storage";
-import { supabase } from "../utils/SupabaseClient";
 
 export const AuthContext = React.createContext<{
 	state: IAuthContext, deState: {

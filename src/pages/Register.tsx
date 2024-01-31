@@ -25,7 +25,6 @@ import {
 import { chevronBackOutline, save, saveOutline } from "ionicons/icons";
 
 import { FormEvent, useState } from "react";
-import { supabase } from "../utils/SupabaseClient";
 import { IPegawaiResponse } from "../interfaces/IResponse";
 import { useHistory } from "react-router-dom";
 import usePegawaiList from "../hooks/usePegawaiList";

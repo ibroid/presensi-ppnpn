@@ -12,7 +12,6 @@
     "@ionic/react": "^7.6.5",
     "@ionic/react-router": "^7.6.5",
     "@ionic/storage": "^3.0.6",
-    "@supabase/supabase-js": "^2.8.0",
     "@testing-library/jest-dom": "^5.11.9",
     "@testing-library/react": "^13.3.0",
     "@testing-library/user-event": "^12.6.3",

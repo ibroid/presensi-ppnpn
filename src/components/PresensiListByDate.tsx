@@ -4,7 +4,6 @@ import { IPresensiListByDateProp } from "../interfaces/IProps";
 import usePresensiList from "../hooks/usePresensiList";
 import { trash } from "ionicons/icons";
 import { useCallback, useState } from "react";
-import { supabase } from "../utils/SupabaseClient";
 
 
 export default function PresensiListByDate({ date, pegawaiId }: IPresensiListByDateProp) {
@@ -29,15 +28,7 @@ export default function PresensiListByDate({ date, pegawaiId }: IPresensiListByD
 						role: 'confirm',
 						handler: async () => {
 							setProccess(true)
-							const { data, error } = await supabase.from('presensi').delete().eq('id', id);
-							if (error) {
-								NotifToaster({
-									message: 'Terjadi Kesalahan. ' + error.message,
-									duration: 2000,
-									position: 'top',
-									color: 'danger'
-								})
-							}
+
 							setRefetch(prev => prev + 1);
 							setTimeout(() => {
 								setProccess(false);
@@ -98,16 +89,7 @@ export default function PresensiListByDate({ date, pegawaiId }: IPresensiListByD
 
 	const UbahJenisPresensi = useCallback((id: number, jenis: number) => {
 		setProccess(true);
-		supabase
-			.from('presensi')
-			.update({ jenis: jenis })
-			.eq('id', id)
-			.then(({ data, error }) => {
-				setRefetch(prev => prev + 1);
-				setTimeout(() => {
-					setProccess(false);
-				}, 2000)
-			})
+
 	}, []);
 
 	const { presensi, loading } = usePresensiList({
