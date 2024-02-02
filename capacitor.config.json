@@ -1,6 +1,6 @@
 {
 	"appId": "com.presensi.ppnpnpaju",
-	"appName": "Presensi PPNPN",
+	"appName": "Presensi PAJU",
 	"webDir": "build",
 	"bundledWebRuntime": false,
 	"plugins": {

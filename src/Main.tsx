@@ -32,7 +32,6 @@ import Register from './pages/Register';
 setupIonicReact();
 
 const Main: React.FC = () => {
-
 	return (
 		<IonApp>
 			<IonReactRouter>
@@ -40,7 +39,7 @@ const Main: React.FC = () => {
 					<Route path={"/auth"} component={Auth}></Route>
 					<Route path={"/register"} component={Register}></Route>
 					<Route exact path="/">
-						<Redirect to='/app' />
+						<Redirect to="/app" />
 					</Route>
 					<Route path="/app" component={Tabs} />
 				</IonRouterOutlet>

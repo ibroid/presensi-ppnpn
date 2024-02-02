@@ -51,13 +51,6 @@ const Register: React.FC = () => {
 
 	return (
 		<IonPage className="pageContainer">
-			<IonAlert
-				isOpen={open}
-				onDidDismiss={() => setOpen(false)}
-				header="Perhatian"
-				message={notifMessage}
-				buttons={['Ok']}
-			/>
 			<IonHeader>
 				<IonToolbar color={"tertiary"}>
 					<IonButtons slot="start" onClick={() => history.goBack()}>

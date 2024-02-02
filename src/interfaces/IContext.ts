@@ -1,5 +1,5 @@
-export interface IAuthContext {
+export interface IAuthContext<T> {
     isLoading: boolean;
-    token: string;
-
+    token: string | null;
+    user: T
 }

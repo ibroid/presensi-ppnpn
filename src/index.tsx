@@ -3,6 +3,12 @@ import { createRoot } from 'react-dom/client';
 import App from './App';
 import * as serviceWorkerRegistration from './serviceWorkerRegistration';
 import reportWebVitals from './reportWebVitals';
+import { SplashScreen } from '@capacitor/splash-screen';
+
+await SplashScreen.show({
+  showDuration: 5000,
+  autoHide: true,
+});
 
 const container = document.getElementById('root');
 const root = createRoot(container!);

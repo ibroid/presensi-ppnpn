@@ -29,7 +29,6 @@ import 'moment/locale/id';
 const Tab2: React.FC = () => {
 
   const [NotifToaster] = useIonToast();
-  const [loading, setLoading] = useState<boolean>(false);
   const [presensiShowList, setPresensiShowList] = useState<any[]>([]);
   const [leaveStatus, setLeaveStatus] = useState<boolean>(false);
 
@@ -40,7 +39,6 @@ const Tab2: React.FC = () => {
   let abortController: { signal: AbortSignal; abort: () => void; };
 
   useIonViewDidEnter(() => {
-    setLoading(true);
     abortController = new AbortController();
 
 
@@ -49,7 +47,6 @@ const Tab2: React.FC = () => {
   useIonViewWillLeave(() => {
     abortController.abort()
     setLeaveStatus(true);
-    setLoading(false);
     setPresensiShowList([]);
   })
 
@@ -67,13 +64,11 @@ const Tab2: React.FC = () => {
             <IonDatetime
               onIonChange={async (e) => {
                 const selectedDate = String(e.target.value).replace('T21:43:00+07:00', '')
-                setLoading(true);
-                setLoading(false);
               }}
               presentation="date" color={"primary"} showDefaultTimeLabel={false}></IonDatetime>
           </IonRow>
           <IonRow className='ion-justify-content-center'>
-            {loading ? <IonText><h1> Loading...</h1></IonText> : <></>}
+            {/* {loading ? <IonText><h1> Loading...</h1></IonText> : <></>} */}
           </IonRow>
         </IonGrid>
         <Virtuoso
