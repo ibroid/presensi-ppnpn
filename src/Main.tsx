@@ -27,7 +27,7 @@ import './theme/variables.css';
 import Tabs from './pages/Tabs';
 import Auth from './pages/Auth';
 import Register from './pages/Register';
-
+import { AuthProvider } from './context/AuthContext';
 
 setupIonicReact();
 
@@ -36,12 +36,14 @@ const Main: React.FC = () => {
 		<IonApp>
 			<IonReactRouter>
 				<IonRouterOutlet>
-					<Route path={"/auth"} component={Auth}></Route>
-					<Route path={"/register"} component={Register}></Route>
-					<Route exact path="/">
-						<Redirect to="/app" />
-					</Route>
-					<Route path="/app" component={Tabs} />
+					<AuthProvider>
+						<Route path={"/auth"} component={Auth}></Route>
+						<Route path={"/register"} component={Register}></Route>
+						<Route exact path="/">
+							<Redirect to="/app" />
+						</Route>
+						<Route path="/app" component={Tabs} />
+					</AuthProvider>
 				</IonRouterOutlet>
 			</IonReactRouter>
 		</IonApp>

@@ -2,8 +2,9 @@ import * as React from "react";
 import { IAuthContext } from "../interfaces/IContext";
 import { Storage } from "@ionic/storage";
 import { httpInstance } from "../utils/HttpClient";
+import { set } from "react-hook-form";
 
-type User = {
+export type User = {
 	id: number,
 	name: string,
 	identifier: string,
@@ -26,8 +27,9 @@ type User = {
 export const AuthContext = React.createContext<{
 	state: IAuthContext<null | User>, deState: {
 		setLoading: (par: boolean) => void,
-		setToken: (token: string, refresh: string) => void,
-		checkAuth: () => Promise<null | User>
+		setToken: (token: string) => void,
+		checkAuth: () => Promise<null | User>,
+		setUser: (user: User) => void
 	}
 }>({
 	state: {
@@ -39,14 +41,17 @@ export const AuthContext = React.createContext<{
 		setLoading: function (par: boolean): void {
 			throw new Error("Function not implemented.");
 		},
-		setToken: function (token: string, refresh: string): void {
+		setToken: function (token: string): void {
 			throw new Error("Function not implemented.");
 		},
 		checkAuth: function (): Promise<null | User> {
 			return new Promise<null | User>((resolve, reject) => {
 				resolve(null);
 			})
-		}
+		},
+		setUser(user: User) {
+			throw new Error("Function not implemented.");
+		},
 	}
 });
 
@@ -106,6 +111,12 @@ export const AuthProvider = ({ children }: AuthContextProviderProps) => {
 			}
 			return null;
 		},
+		setUser(user: User) {
+			setState((prev) => {
+				prev.user = user;
+				return { ...prev };
+			});
+		}
 	};
 
 	return (

@@ -1,10 +1,11 @@
 import Main from "./Main";
-import { AuthProvider } from "./context/AuthContext";
+import { GlobalProvider } from "./context/GlobalContext";
 
 export default function App() {
+
   return (
-    <AuthProvider>
+    <GlobalProvider>
       <Main />
-    </AuthProvider>
+    </GlobalProvider>
   )
 }

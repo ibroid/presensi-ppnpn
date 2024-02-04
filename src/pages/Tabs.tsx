@@ -17,7 +17,7 @@ import { AuthContext } from '../context/AuthContext';
 
 const Tabs: React.FC = () => {
 	const { state } = useContext(AuthContext)
-	if (!state.user) {
+	if (state.user == null) {
 		return <Redirect to="/auth" />
 	}
 
