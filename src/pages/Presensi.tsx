@@ -1,84 +1,194 @@
 import {
-  IonCard,
-  IonCardContent,
-  IonCardHeader,
-  IonCardTitle,
-  IonCol,
   IonContent,
   IonGrid,
   IonHeader,
-  IonIcon,
-  IonItem,
-  IonLabel,
-  IonList,
   IonPage,
-  IonRow,
-  IonSelect,
-  IonSelectOption,
-  IonText,
   IonTitle,
   IonToolbar,
+  IonRow,
+  IonDatetime,
+  IonText,
+  IonProgressBar,
+  IonList,
+  IonItem,
+  IonLabel,
+  IonListHeader,
+  IonIcon,
+  useIonToast,
+  useIonViewDidEnter
 } from '@ionic/react';
 
 import {
   useCallback,
   useContext,
+  useEffect,
   useState
 } from 'react';
 
-import { calendarClear } from 'ionicons/icons';
-import { IPegawaiResponse } from '../interfaces/IResponse';
-import { PegawaiListContext } from '../context/PegawaiListContext';
-
-import WidgetPresensiList from '../components/WidgetPresensiList';
-import moment from 'moment';
-import FormPresensi from '../components/FormPresensi';
+import Clock from 'react-live-clock';
 
 import 'moment/locale/id';
-import './Tab1.css';
+import '../global.css';
+import { Geolocation, Position } from '@capacitor/geolocation';
+import { locate, moon, sunny } from 'ionicons/icons';
+import { httpInstance } from '../utils/HttpClient';
+import { AuthContext } from '../context/AuthContext';
+import { set } from 'react-hook-form';
+import { AxiosError } from 'axios';
+import { CreatePresenceResponse, Presence } from '../interfaces/IResponse';
 
 
-const Tab1: React.FC = () => {
+const Presensi: React.FC = () => {
 
-  const [selectedPegawai, setSelectedPegawai] = useState<IPegawaiResponse>();
-  const [selectedPegawaiId, setSelectedPegawaiId] = useState<number>(0)
+  const [loading, setLoading] = useState<boolean>(false);
+  const { state } = useContext(AuthContext);
+  const [location, setLocation] = useState<string | null>();
+  const [toast] = useIonToast()
+  const [dataPresensiDatang, setDataPresensiDatang] = useState<Presence>();
+  const [dataPresensiPulang, setDataPresensiPulang] = useState<Presence>();
 
-  const [Moment] = useState<moment.Moment>(() => {
-    return moment(Date.now()).locale('id');
-  });
+  const savePresensi = useCallback(async (session: number) => {
+    setLoading(true)
+    httpInstance(state.token).post<CreatePresenceResponse>("/presence", {
+      session: session,
+      location: location
+    })
+      .then((res) => {
+        if (res.data.data.session === 1) {
+          setDataPresensiDatang(res.data.data)
+        } else {
+          setDataPresensiPulang(res.data.data)
+        }
 
+        toast({
+          message: res.data.message,
+          duration: 5000,
+          color: 'success',
+          buttons: [
+            {
+              text: "Tutup",
+              role: "cancel",
+            }
+          ]
+        })
+      })
+      .catch((err: any) => {
+        let errorMessage: string = ""
+        if (err instanceof AxiosError && err.isAxiosError) {
+          errorMessage = err.response?.data.message ?? err.response?.data.error.message;
+        } else {
+          errorMessage = err.message;
+        }
 
-  const pegawaiList = useContext(PegawaiListContext);
+        toast({
+          message: errorMessage,
+          duration: 5000,
+          color: 'danger',
+          buttons: [
+            {
+              text: "Tutup",
+              role: "cancel",
+            }
+          ]
+        })
+      })
 
-  const selectPegawai = useCallback(async () => {
-    const findPegawaiById = pegawaiList?.find((val, i) => (val.id === selectedPegawaiId));
+      .finally(() => setLoading(false))
+  }, [location])
 
-    setSelectedPegawai(findPegawaiById);
-  }, [selectedPegawaiId])
+  useIonViewDidEnter(() => {
+    Geolocation.getCurrentPosition().then((data: Position) => setLocation(`${data.coords.latitude} ${data.coords.longitude}`)).catch((err: any) => setLocation("Gagal Mendapatkan Lokasi. Error: " + err.message))
+
+    setLoading(true)
+    httpInstance(state.token).get<Presence[]>("/presence")
+      .then((res) => {
+        res.data.forEach((presensi) => {
+          if (presensi.session === 1) {
+            setDataPresensiDatang(presensi)
+          } else {
+            setDataPresensiPulang(presensi)
+          }
+        })
+      })
+      .catch((err: any) => {
+        let errorMessage: string = ""
+        if (err instanceof AxiosError && err.isAxiosError) {
+          errorMessage = err.response?.data.message ?? err.response?.data.error.message;
+        } else {
+          errorMessage = err.message;
+        }
+
+        toast({
+          message: errorMessage,
+          duration: 5000,
+          color: 'danger',
+          buttons: [
+            {
+              text: "Tutup",
+              role: "cancel",
+            }
+          ]
+        })
+      })
+
+      .finally(() => setLoading(false))
+  }, [])
 
   return (
-    <IonPage className="pageContainer">
+    <IonPage className="pageContainer" >
       <IonHeader>
         <IonToolbar color={'tertiary'} >
           <IonTitle>Presensi Kehadiran</IonTitle>
         </IonToolbar>
       </IonHeader>
-      <IonContent fullscreen>
-        <IonGrid className='ion-margin-top'>
-          <IonSelect
-            label='Pilih Pegawai :'
-            onIonDismiss={selectPegawai}
-            value={setSelectedPegawaiId}
-            class='ion-width-max'
-            onIonChange={(e) => setSelectedPegawaiId(e.target.value)}  >
-            {pegawaiList?.map((row: IPegawaiResponse, i: number) => <IonSelectOption key={++i} value={row.id}>{row.fullname}</IonSelectOption>)}
-          </IonSelect>
-          {selectedPegawai ? <FormPresensi pegawai={selectedPegawai} /> : <></>}
+      <IonContent fullscreen >
+        <IonGrid className='ion-margin-top-sm'>
+          <IonText className='ion-text-center'><p>Kalender Kehadiran</p></IonText>
+          <IonRow class="ion-no-margin-top ion-justify-content-center ion-align-items-center">
+            <IonDatetime
+              onIonChange={async (e) => {
+                const selectedDate = String(e.target.value).replace('T21:43:00+07:00', '')
+                console.log(selectedDate)
+              }}
+              presentation="date" color={"primary"} showDefaultTimeLabel={false}></IonDatetime>
+          </IonRow>
         </IonGrid>
+        <IonList inset={true}>
+          <IonListHeader>
+            <IonLabel>
+              <h3>Riwayat Presensi</h3>
+              <Clock format={'HH:mm:ss'} ticking={true} timezone='Asia/Jakarta' />
+            </IonLabel>
+          </IonListHeader>
+          {loading ? <IonProgressBar type='indeterminate' ><h1> Loading...</h1></IonProgressBar> : <></>}
+          <IonItem disabled={loading} button={true} onClick={() => savePresensi(1)}>
+            <IonIcon icon={sunny} color='warning' slot="start"></IonIcon>
+            <IonLabel>
+              <h2>Presensi Datang</h2>
+              {dataPresensiDatang?.present_time ? <p color='danger'>Anda Sudah Presensi</p> : <p color='danger'>Anda Belum Presensi</p>}
+            </IonLabel>
+            <p>{dataPresensiDatang?.present_time ?? "Klik Disini"}</p>
+          </IonItem>
+          <IonItem disabled={loading} button={true} onClick={() => savePresensi(2)}>
+            <IonIcon icon={moon} color='primary' slot="start"></IonIcon>
+            <IonLabel>
+              <h2>Presensi Pulang</h2>
+              {dataPresensiPulang?.present_time ? <p color='danger'>Anda Sudah Presensi</p> : <p color='danger'>Anda Belum Presensi</p>}
+            </IonLabel>
+            <p>{dataPresensiPulang?.present_time ?? "Klik Disini"}</p>
+          </IonItem>
+          <IonItem>
+            <IonIcon icon={locate} color='danger' slot="start"></IonIcon>
+            <IonLabel>
+              <h2>Posisi GPS Anda</h2>
+              <p>{location}</p>
+            </IonLabel>
+          </IonItem>
+        </IonList>
       </IonContent>
     </IonPage>
   );
 };
 
-export default Tab1;
+export default Presensi;
 

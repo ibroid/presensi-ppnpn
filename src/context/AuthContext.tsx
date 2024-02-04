@@ -1,8 +1,7 @@
 import * as React from "react";
 import { IAuthContext } from "../interfaces/IContext";
-import { Storage } from "@ionic/storage";
 import { httpInstance } from "../utils/HttpClient";
-import { set } from "react-hook-form";
+import { Preferences } from '@capacitor/preferences';
 
 export type User = {
 	id: number,
@@ -61,27 +60,13 @@ type AuthContextProviderProps = {
 
 
 export const AuthProvider = ({ children }: AuthContextProviderProps) => {
+
 	const [state, setState] = React.useState<IAuthContext<null | User>>({
-		isLoading: true,
+		isLoading: false,
 		token: null,
 		user: null
 	});
 
-	const [storage, setStorage] = React.useState<Storage>();
-
-	React.useEffect(() => {
-		const bootstrapping = async (): Promise<void> => {
-			const newStorage = new Storage({
-				name: "kuyabatokdb",
-			});
-
-			const storage = await newStorage.create();
-
-			setStorage(storage);
-		};
-
-		bootstrapping();
-	}, []);
 
 	const deState = {
 		setLoading: (par: boolean) =>
@@ -89,27 +74,38 @@ export const AuthProvider = ({ children }: AuthContextProviderProps) => {
 				prev.isLoading = par;
 				return { ...prev };
 			}),
-		setToken: (token: string) =>
+		setToken: async (token: string) => {
+			await Preferences.set({
+				key: 'token',
+				value: token,
+			});
+
 			setState((prev) => {
 				prev.token = token;
-				storage?.set("token", token);
 				return { ...prev };
-			}),
+			})
+		},
 		checkAuth: async () => {
-			const token: string = await storage?.get("token");
+			deState.setLoading(true);
+			const { value: token } = await Preferences.get({ key: 'token' });
 			if (token) {
 				const httpClient = httpInstance(token);
 				try {
-					const res = await httpClient.get<User>("/api/auth/me");
-					setState((prev) => {
-						prev.user = res.data;
-						return { ...prev };
+					const res = await httpClient.get<User>("/user");
+					setState({
+						isLoading: false,
+						token: token,
+						user: res.data
 					});
 				} catch (error) {
-					deState.setToken("");
+					setState({
+						isLoading: false,
+						token: "",
+						user: null
+					});
 				}
 			}
-			return null;
+			return null
 		},
 		setUser(user: User) {
 			setState((prev) => {
@@ -122,7 +118,6 @@ export const AuthProvider = ({ children }: AuthContextProviderProps) => {
 	return (
 		<AuthContext.Provider value={{ state, deState }}>
 			{children}
-
 		</AuthContext.Provider>
 	);
 }

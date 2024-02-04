@@ -47,3 +47,21 @@ export interface IPpnpnWithPresensi {
     "photos": string,
     presensi: IPresensiResponse[]
 }
+
+export type Presence = {
+    id: number;
+    status: number;
+    session: number;
+    present_date: Date;
+    present_time: string;
+    employee_id: number;
+    created_at: Date;
+    updated_at: Date;
+    location: string;
+}
+
+export type CreatePresenceResponse = {
+    status: string;
+    message: string;
+    data: Presence;
+}

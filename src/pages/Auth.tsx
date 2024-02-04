@@ -15,9 +15,12 @@ import {
 	IonTitle,
 	IonToolbar,
 	useIonToast,
+	useIonRouter,
+	useIonLoading,
+	useIonViewDidLeave
 } from "@ionic/react";
 import { logIn } from "ionicons/icons";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 
 import { useForm } from "react-hook-form";
 import { httpInstance } from "../utils/HttpClient";
@@ -25,6 +28,7 @@ import { AuthContext, User } from "../context/AuthContext";
 import { AxiosError } from "axios";
 import RegisterButton from "../components/RegisterButton";
 import { GlobalContext } from "../context/GlobalContext";
+import { stat } from "fs";
 
 type LoginModel = {
 	phone: string;
@@ -39,11 +43,12 @@ type LoginResponse = {
 const Auth: React.FC = () => {
 
 	const { register, handleSubmit, formState: { errors } } = useForm<LoginModel>()
-	const { deState } = useContext(AuthContext)
+	const { deState, state } = useContext(AuthContext)
 	const { server_variable } = useContext(GlobalContext)
 	const [loginLoading, setLoginLoading] = useState<boolean>(false)
 	const [toast] = useIonToast()
-
+	const route = useIonRouter()
+	const [ionLoadingStart, ionLoadingClose] = useIonLoading()
 
 	const validSubmit = (data: LoginModel) => {
 		setLoginLoading(true)
@@ -78,12 +83,32 @@ const Auth: React.FC = () => {
 			})
 			.finally(() => {
 				setLoginLoading(false)
+				route.push("/app", "root", "replace")
 			})
 	}
 
 	const invalidSubmit = () => {
 		console.log("is error :", errors)
 	}
+
+	useEffect(() => {
+		deState.checkAuth()
+	}, [])
+
+	useEffect(() => {
+		if (state.isLoading) {
+			ionLoadingStart({
+				duration: 2000,
+				message: "Memeriksa User...",
+				spinner: "dots"
+			})
+		} else {
+			ionLoadingClose()
+			if (state.user) {
+				route.push("/app", "root", "replace")
+			}
+		}
+	}, [state.isLoading])
 
 	return (
 		<IonPage className="pageContainer">
