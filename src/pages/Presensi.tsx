@@ -15,13 +15,15 @@ import {
   IonListHeader,
   IonIcon,
   useIonToast,
-  useIonViewDidEnter
+  useIonViewDidEnter,
+  useIonViewWillLeave
 } from '@ionic/react';
 
 import {
   useCallback,
   useContext,
   useEffect,
+  useRef,
   useState
 } from 'react';
 
@@ -34,8 +36,9 @@ import { locate, moon, sunny } from 'ionicons/icons';
 import { httpInstance } from '../utils/HttpClient';
 import { AuthContext } from '../context/AuthContext';
 import { set } from 'react-hook-form';
-import { AxiosError } from 'axios';
+import axios, { AxiosError } from 'axios';
 import { CreatePresenceResponse, Presence } from '../interfaces/IResponse';
+import { abort } from 'process';
 
 
 const Presensi: React.FC = () => {
@@ -46,9 +49,11 @@ const Presensi: React.FC = () => {
   const [toast] = useIonToast()
   const [dataPresensiDatang, setDataPresensiDatang] = useState<Presence>();
   const [dataPresensiPulang, setDataPresensiPulang] = useState<Presence>();
+  let abortController: { signal: AbortSignal; abort: () => void };
 
   const savePresensi = useCallback(async (session: number) => {
     setLoading(true)
+    console.log("gembel")
     httpInstance(state.token).post<CreatePresenceResponse>("/presence", {
       session: session,
       location: location
@@ -97,11 +102,14 @@ const Presensi: React.FC = () => {
   }, [location])
 
   useIonViewDidEnter(() => {
+    console.log("astagfirullah")
     Geolocation.getCurrentPosition().then((data: Position) => setLocation(`${data.coords.latitude} ${data.coords.longitude}`)).catch((err: any) => setLocation("Gagal Mendapatkan Lokasi. Error: " + err.message))
-
     setLoading(true)
-    httpInstance(state.token).get<Presence[]>("/presence")
+    abortController = new AbortController()
+    const signal = abortController.signal;
+    httpInstance(state.token).get<Presence[]>("/presence", { signal })
       .then((res) => {
+        console.log(res)
         res.data.forEach((presensi) => {
           if (presensi.session === 1) {
             setDataPresensiDatang(presensi)
@@ -111,6 +119,9 @@ const Presensi: React.FC = () => {
         })
       })
       .catch((err: any) => {
+        if (err.code === "ERR_CANCELED") {
+          return;
+        }
         let errorMessage: string = ""
         if (err instanceof AxiosError && err.isAxiosError) {
           errorMessage = err.response?.data.message ?? err.response?.data.error.message;
@@ -133,6 +144,8 @@ const Presensi: React.FC = () => {
 
       .finally(() => setLoading(false))
   }, [])
+
+  useIonViewWillLeave(() => abortController.abort())
 
   return (
     <IonPage className="pageContainer" >
