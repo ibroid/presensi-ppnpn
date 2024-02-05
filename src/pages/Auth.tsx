@@ -55,6 +55,7 @@ const Auth: React.FC = () => {
 			.then(res => {
 				deState.setUser(res.data.user)
 				deState.setToken(res.data.token)
+				route.push("/app", "root", "replace")
 			})
 			.catch(err => {
 				if (err instanceof AxiosError && err.isAxiosError) {
@@ -81,7 +82,6 @@ const Auth: React.FC = () => {
 			})
 			.finally(() => {
 				setLoginLoading(false)
-				route.push("/app", "root", "replace")
 			})
 	}
 

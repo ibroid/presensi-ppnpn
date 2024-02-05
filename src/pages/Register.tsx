@@ -13,33 +13,78 @@ import {
 	IonSelectOption,
 	IonText,
 	IonToolbar,
+	IonProgressBar,
+	useIonToast,
+	useIonRouter,
 } from "@ionic/react";
 import { chevronBackOutline, save, saveOutline } from "ionicons/icons";
 
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { IPegawaiResponse } from "../interfaces/IResponse";
 import { useHistory } from "react-router-dom";
 import usePegawaiList from "../hooks/usePegawaiList";
 import { useForm, SubmitHandler } from "react-hook-form";
+import { httpInstance } from "../utils/HttpClient";
+import { AxiosError } from "axios";
+import { error } from "console";
+import { AuthContext } from "../context/AuthContext";
 
 type RegisterForm = {
-	ppnpn_id: number;
-	phone: string;
+	employee_id: number;
+	identifier: string;
 	password: string;
+	name: string;
 }
 
 const Register: React.FC = () => {
-	const { error: errPegawaiList, loading: loadingPegawai, pegawai } = usePegawaiList()
-	const history = useHistory();
-	const [open, setOpen] = useState<boolean>(false);
-	const [notifMessage, setNotifMessage] = useState<string>('Notif Message');
+	const [loading, setLoading] = useState<boolean>(false);
+	const [toast] = useIonToast();
+	const { deState } = useContext(AuthContext)
+	const route = useIonRouter()
 
-	const { register, handleSubmit, formState: { errors } } = useForm<RegisterForm>();
+	const {
+		error: errPegawaiList,
+		loading: loadingPegawai,
+		pegawais,
+	} = usePegawaiList();
+
+	const history = useHistory();
+
+	const {
+		register,
+		handleSubmit,
+		formState: { errors },
+		setValue,
+	} = useForm<RegisterForm>();
 
 	const onSubmit: SubmitHandler<RegisterForm> = (data) => {
-		console.log(data)
-	}
+		setLoading(true)
+		httpInstance(null).post("/register", data)
+			.then((res) => {
+				deState.setUser(res.data.user)
+				deState.setToken(res.data.token)
+				route.push("/app", "root", "replace")
+			})
+			.catch(err => {
+				let errorMessage = "";
+				if (err instanceof AxiosError && err.isAxiosError) {
+					errorMessage = err.response?.data.message ?? err.response?.data.error.message
+				} else {
+					errorMessage = err.message
+				}
 
+				toast({
+					message: errorMessage,
+					duration: 5000,
+					color: "danger",
+					buttons: [{
+						text: "Tutup",
+						role: "cancel",
+					}]
+				})
+			})
+			.finally(() => setLoading(false))
+	};
 
 	return (
 		<IonPage className="pageContainer">
@@ -62,26 +107,53 @@ const Register: React.FC = () => {
 				<form onSubmit={handleSubmit(onSubmit)}>
 					<IonList>
 						<IonItem>
-							<IonSelect label="Pegawai" placeholder="Pilih Disini">
-								{pegawai?.data.map((row: IPegawaiResponse, i: number) => (
-									<IonSelectOption key={i} value={row.id}>{row.fullname}</IonSelectOption>
+							<IonSelect
+								onIonChange={(e) => {
+									if (pegawais && pegawais.length > 0) {
+										setValue("name", pegawais.find((x) => x.id === e.target.value)?.fullname ?? "Isi nama panggilan saja");
+									}
+								}}
+								label="Pegawai"
+								interface="action-sheet"
+								{...register("employee_id", { required: "Tidak boleh kosong" })}
+							>
+								{pegawais?.map((row: IPegawaiResponse, i: number) => (
+									<IonSelectOption key={i} value={row.id}>
+										{row.fullname}
+									</IonSelectOption>
 								))}
 							</IonSelect>
 						</IonItem>
 						<IonItem>
-							<IonInput {...register("phone", { required: true })} label="Nomor HP :" type="number"></IonInput>
+							<IonInput
+								{...register("name", { required: "Tidak boleh kosong" })}
+								label="Nama :"
+								type="text"
+							></IonInput>
 						</IonItem>
 						<IonItem>
-							<IonInput {...register("password", { required: true })} label="Password :" type="password"></IonInput>
+							<IonInput
+								{...register("identifier", { required: "Tidak boleh kosong" })}
+								label="Nomor HP :"
+								type="number"
+							></IonInput>
 						</IonItem>
+						<IonItem>
+							<IonInput
+								{...register("password", { required: "Tidak boleh kosong" })}
+								label="Password :"
+								type="password"
+							></IonInput>
+						</IonItem>
+						{loading && <IonProgressBar type="indeterminate" />}
 					</IonList>
-					<IonButton type="submit" expand="full" color={"skyblue"}>
+					<IonButton disabled={loading} type="submit" expand="full" color={"skyblue"}>
 						<strong>Simpan</strong>
 						<IonIcon slot="start" icon={save}></IonIcon>
 					</IonButton>
 				</form>
 			</IonContent>
-		</IonPage >
+		</IonPage>
 	);
 };
 

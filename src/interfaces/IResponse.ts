@@ -7,7 +7,7 @@ export interface IJabatanResponse {
 export interface IPegawaiResponse {
     "id": number,
     "fullname": string,
-    "jabatan_id": number,
+    "employee_level_id": number,
     "created_at": Date,
     "updated_at": null | Date,
     "photos": string
