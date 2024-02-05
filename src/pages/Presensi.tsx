@@ -16,14 +16,14 @@ import {
   IonIcon,
   useIonToast,
   useIonViewDidEnter,
-  useIonViewWillLeave
+  useIonViewWillLeave,
+  IonChip,
+  IonAvatar
 } from '@ionic/react';
 
 import {
   useCallback,
   useContext,
-  useEffect,
-  useRef,
   useState
 } from 'react';
 
@@ -35,10 +35,9 @@ import { Geolocation, Position } from '@capacitor/geolocation';
 import { locate, moon, sunny } from 'ionicons/icons';
 import { httpInstance } from '../utils/HttpClient';
 import { AuthContext } from '../context/AuthContext';
-import { set } from 'react-hook-form';
-import axios, { AxiosError } from 'axios';
+import { AxiosError } from 'axios';
 import { CreatePresenceResponse, Presence } from '../interfaces/IResponse';
-import { abort } from 'process';
+import DefaultHeader from '../components/DefaultHeader';
 
 
 const Presensi: React.FC = () => {
@@ -49,14 +48,16 @@ const Presensi: React.FC = () => {
   const [toast] = useIonToast()
   const [dataPresensiDatang, setDataPresensiDatang] = useState<Presence>();
   const [dataPresensiPulang, setDataPresensiPulang] = useState<Presence>();
+  const [selectedPresenceDate, setSelectedPresenceDate] = useState<string | null>();
+
   let abortController: { signal: AbortSignal; abort: () => void };
 
   const savePresensi = useCallback(async (session: number) => {
     setLoading(true)
-    console.log("gembel")
     httpInstance(state.token).post<CreatePresenceResponse>("/presence", {
       session: session,
-      location: location
+      location: location,
+      present_date: selectedPresenceDate
     })
       .then((res) => {
         if (res.data.data.session === 1) {
@@ -99,17 +100,21 @@ const Presensi: React.FC = () => {
       })
 
       .finally(() => setLoading(false))
-  }, [location])
+  }, [location, selectedPresenceDate])
 
-  useIonViewDidEnter(() => {
-    console.log("astagfirullah")
-    Geolocation.getCurrentPosition().then((data: Position) => setLocation(`${data.coords.latitude} ${data.coords.longitude}`)).catch((err: any) => setLocation("Gagal Mendapatkan Lokasi. Error: " + err.message))
-    setLoading(true)
+  const fetchPresensi = useCallback(async (selectedDate: string) => {
     abortController = new AbortController()
     const signal = abortController.signal;
-    httpInstance(state.token).get<Presence[]>("/presence", { signal })
+    setLoading(true)
+
+    httpInstance(state.token).get<Presence[]>("/presence?date=" + selectedDate, { signal })
       .then((res) => {
-        console.log(res)
+        if (res.data.length === 0) {
+          setDataPresensiDatang(undefined)
+          setDataPresensiPulang(undefined)
+          return;
+        }
+
         res.data.forEach((presensi) => {
           if (presensi.session === 1) {
             setDataPresensiDatang(presensi)
@@ -145,15 +150,19 @@ const Presensi: React.FC = () => {
       .finally(() => setLoading(false))
   }, [])
 
+  useIonViewDidEnter(() => {
+    Geolocation.getCurrentPosition().then((data: Position) => setLocation(`${data.coords.latitude} ${data.coords.longitude}`)).catch((err: any) => setLocation("Gagal Mendapatkan Lokasi. Error: " + err.message))
+
+    const date = new Date();
+    const todayYmd = date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate();
+    fetchPresensi(todayYmd)
+  }, [])
+
   useIonViewWillLeave(() => abortController.abort())
 
   return (
     <IonPage className="pageContainer" >
-      <IonHeader>
-        <IonToolbar color={'tertiary'} >
-          <IonTitle>Presensi Kehadiran</IonTitle>
-        </IonToolbar>
-      </IonHeader>
+      <DefaultHeader title='Presensi' />
       <IonContent fullscreen >
         <IonGrid className='ion-margin-top-sm'>
           <IonText className='ion-text-center'><p>Kalender Kehadiran</p></IonText>
@@ -161,7 +170,9 @@ const Presensi: React.FC = () => {
             <IonDatetime
               onIonChange={async (e) => {
                 const selectedDate = String(e.target.value).replace('T21:43:00+07:00', '')
-                console.log(selectedDate)
+                const todayYmd = selectedDate.split("T")[0]
+                setSelectedPresenceDate(todayYmd)
+                fetchPresensi(todayYmd)
               }}
               presentation="date" color={"primary"} showDefaultTimeLabel={false}></IonDatetime>
           </IonRow>

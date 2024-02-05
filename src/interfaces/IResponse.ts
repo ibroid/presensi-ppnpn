@@ -65,3 +65,13 @@ export type CreatePresenceResponse = {
     message: string;
     data: Presence;
 }
+
+export type Activity = {
+    id: number;
+    doing: string;
+    doing_time: string;
+    note: string;
+    doing_date: Date;
+    created_at: Date;
+    updated_at: Date;
+}

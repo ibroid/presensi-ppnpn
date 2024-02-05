@@ -1,30 +1,22 @@
 import {
-	IonAlert,
 	IonBackButton,
 	IonButton,
 	IonButtons,
-	IonCol,
 	IonContent,
-	IonGrid,
 	IonHeader,
 	IonIcon,
-	IonImg,
 	IonList,
 	IonInput,
 	IonItem,
-	IonNote,
 	IonPage,
-	IonRow,
 	IonSelect,
 	IonSelectOption,
 	IonText,
 	IonToolbar,
-	useIonViewDidEnter,
-	useIonLoading
 } from "@ionic/react";
 import { chevronBackOutline, save, saveOutline } from "ionicons/icons";
 
-import { FormEvent, useState } from "react";
+import { useState } from "react";
 import { IPegawaiResponse } from "../interfaces/IResponse";
 import { useHistory } from "react-router-dom";
 import usePegawaiList from "../hooks/usePegawaiList";

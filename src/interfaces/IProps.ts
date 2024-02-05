@@ -31,3 +31,7 @@ export interface IPresensiListByDateProp {
 }
 
 export interface IPresensiDetail { row: any, i: number, pegawaiId: number }
+
+export type DefaultHeaderProps = {
+    title: string
+}

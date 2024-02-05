@@ -17,7 +17,6 @@ import {
 	useIonToast,
 	useIonRouter,
 	useIonLoading,
-	useIonViewDidLeave
 } from "@ionic/react";
 import { logIn } from "ionicons/icons";
 import { useContext, useEffect, useState } from "react";
@@ -28,7 +27,6 @@ import { AuthContext, User } from "../context/AuthContext";
 import { AxiosError } from "axios";
 import RegisterButton from "../components/RegisterButton";
 import { GlobalContext } from "../context/GlobalContext";
-import { stat } from "fs";
 
 type LoginModel = {
 	phone: string;

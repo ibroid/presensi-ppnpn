@@ -26,9 +26,9 @@ export type User = {
 export const AuthContext = React.createContext<{
 	state: IAuthContext<null | User>, deState: {
 		setLoading: (par: boolean) => void,
-		setToken: (token: string) => void,
+		setToken: (token: string | null) => void,
 		checkAuth: () => Promise<null | User>,
-		setUser: (user: User) => void
+		setUser: (user: User | null) => void
 	}
 }>({
 	state: {
@@ -40,7 +40,7 @@ export const AuthContext = React.createContext<{
 		setLoading: function (par: boolean): void {
 			throw new Error("Function not implemented.");
 		},
-		setToken: function (token: string): void {
+		setToken: function (token: string | null): void {
 			throw new Error("Function not implemented.");
 		},
 		checkAuth: function (): Promise<null | User> {
@@ -48,7 +48,7 @@ export const AuthContext = React.createContext<{
 				resolve(null);
 			})
 		},
-		setUser(user: User) {
+		setUser(user: User | null) {
 			throw new Error("Function not implemented.");
 		},
 	}
@@ -74,11 +74,15 @@ export const AuthProvider = ({ children }: AuthContextProviderProps) => {
 				prev.isLoading = par;
 				return { ...prev };
 			}),
-		setToken: async (token: string) => {
-			await Preferences.set({
-				key: 'token',
-				value: token,
-			});
+		setToken: async (token: string | null) => {
+			if (token == null) {
+				await Preferences.remove({ key: 'token' });
+			} else {
+				await Preferences.set({
+					key: 'token',
+					value: token,
+				});
+			}
 
 			setState((prev) => {
 				prev.token = token;
@@ -91,11 +95,11 @@ export const AuthProvider = ({ children }: AuthContextProviderProps) => {
 			if (token) {
 				const httpClient = httpInstance(token);
 				try {
-					const res = await httpClient.get<User>("/user");
+					const res = await httpClient.get<{ user: User }>("/user");
 					setState({
 						isLoading: false,
 						token: token,
-						user: res.data
+						user: res.data.user
 					});
 				} catch (error) {
 					setState({
@@ -107,7 +111,7 @@ export const AuthProvider = ({ children }: AuthContextProviderProps) => {
 			}
 			return null
 		},
-		setUser(user: User) {
+		setUser(user: User | null) {
 			setState((prev) => {
 				prev.user = user;
 				return { ...prev };
