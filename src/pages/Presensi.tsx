@@ -18,7 +18,8 @@ import {
   useIonViewDidEnter,
   useIonViewWillLeave,
   IonChip,
-  IonAvatar
+  IonAvatar,
+  useIonActionSheet
 } from '@ionic/react';
 
 import {
@@ -49,15 +50,25 @@ const Presensi: React.FC = () => {
   const [dataPresensiDatang, setDataPresensiDatang] = useState<Presence>();
   const [dataPresensiPulang, setDataPresensiPulang] = useState<Presence>();
   const [selectedPresenceDate, setSelectedPresenceDate] = useState<string | null>();
+  const [actionSheet] = useIonActionSheet();
 
   let abortController: { signal: AbortSignal; abort: () => void };
 
-  const savePresensi = useCallback(async (session: number) => {
+  const savePresensi = useCallback(async (session: number, status: number) => {
     setLoading(true)
+    const date = new Date();
+    const todayYmd =
+      date.getFullYear() +
+      "-" +
+      String(date.getMonth() + 1).padStart(2, "0") +
+      "-" +
+      String(date.getDate()).padStart(2, "0");
+
     httpInstance(state.token).post<CreatePresenceResponse>("/presence", {
       session: session,
       location: location,
-      present_date: selectedPresenceDate
+      present_date: selectedPresenceDate ?? todayYmd,
+      status: status
     })
       .then((res) => {
         if (res.data.data.session === 1) {
@@ -101,6 +112,42 @@ const Presensi: React.FC = () => {
 
       .finally(() => setLoading(false))
   }, [location, selectedPresenceDate])
+
+  const statusOption = useCallback((session: number) => {
+    actionSheet({
+      buttons: [
+        {
+          text: 'Hadir',
+          role: 'destructive',
+          data: {
+            action: 'cancel',
+          },
+          handler() {
+            savePresensi(session, 1)
+          },
+        },
+        {
+          text: 'Tidak Hadir',
+          data: {
+            action: 'cancel',
+          },
+          handler() {
+            savePresensi(session, 3)
+          },
+        },
+        {
+          text: 'Cuti',
+          role: 'cancel',
+          data: {
+            action: 'cancel',
+          },
+          handler() {
+            savePresensi(session, 2)
+          },
+        },
+      ],
+    })
+  }, [location])
 
   const fetchPresensi = useCallback(async (selectedDate: string) => {
     abortController = new AbortController()
@@ -185,7 +232,7 @@ const Presensi: React.FC = () => {
             </IonLabel>
           </IonListHeader>
           {loading ? <IonProgressBar type='indeterminate' ><h1> Loading...</h1></IonProgressBar> : <></>}
-          <IonItem disabled={loading} button={true} onClick={() => savePresensi(1)}>
+          <IonItem disabled={loading} button={true} onClick={() => statusOption(1)}>
             <IonIcon icon={sunny} color='warning' slot="start"></IonIcon>
             <IonLabel>
               <h2>Presensi Datang</h2>
@@ -193,7 +240,7 @@ const Presensi: React.FC = () => {
             </IonLabel>
             <p>{dataPresensiDatang?.present_time ?? "Klik Disini"}</p>
           </IonItem>
-          <IonItem disabled={loading} button={true} onClick={() => savePresensi(2)}>
+          <IonItem disabled={loading} button={true} onClick={() => statusOption(2)}>
             <IonIcon icon={moon} color='primary' slot="start"></IonIcon>
             <IonLabel>
               <h2>Presensi Pulang</h2>
