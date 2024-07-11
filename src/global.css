@@ -1,4 +1,5 @@
 @import url("https://fonts.googleapis.com/css2?family=Rubik:wght@300;400&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&display=swap");
 
 :root {
   --ion-color-rose: #ffc0e5;
@@ -21,6 +22,20 @@
   --ion-color-skyblue-contrast-rgb: 0, 0, 0;
   --ion-color-skyblue-shade: #6fb3d4;
   --ion-color-skyblue-tint: #99d4ec;
+
+  --ion-color-amber: #ffd700;
+  --ion-color-amber-rgb: 255, 215, 0;
+  --ion-color-amber-contrast: #555506;
+  --ion-color-amber-contrast-rgb: 0, 0, 0;
+  --ion-color-amber-shade: #f2c464;
+  --ion-color-amber-tint: #ffe57f;
+
+  --ion-color-lime: #78e365;
+  --ion-color-lime-rgb: 50, 205, 50;
+  --ion-color-lime-contrast: #1a4d21;
+  --ion-color-lime-contrast-rgb: 0, 0, 0;
+  --ion-color-lime-shade: #36c267;
+  --ion-color-lime-tint: #51d175;
 }
 
 .ion-color-rose {
@@ -50,6 +65,24 @@
   --ion-color-tint: var(--ion-color-skyblue-tint);
 }
 
+.ion-color-amber {
+  --ion-color-base: var(--ion-color-amber);
+  --ion-color-base-rgb: var(--ion-color-amber-rgb);
+  --ion-color-contrast: var(--ion-color-amber-contrast);
+  --ion-color-contrast-rgb: var(--ion-color-amber-contrast-rgb);
+  --ion-color-shade: var(--ion-color-amber-shade);
+  --ion-color-tint: var(--ion-color-amber-tint);
+}
+
+.ion-color-lime {
+  --ion-color-base: var(--ion-color-lime);
+  --ion-color-base-rgb: var(--ion-color-lime-rgb);
+  --ion-color-contrast: var(--ion-color-lime-contrast);
+  --ion-color-contrast-rgb: var(--ion-color-lime-contrast-rgb);
+  --ion-color-shade: var(--ion-color-lime-shade);
+  --ion-color-tint: var(--ion-color-lime-tint);
+}
+
 ion-datetime {
   --background: #e1eaf6;
   --background-rgb: 42, 115, 138;
@@ -70,5 +103,9 @@ body {
 
 html {
   --ion-dynamic-font: var(--ion-default-dynamic-font);
-  --ion-font-family: "Rubik", sans-serif;
+  --ion-font-family: "Lexend";
+}
+
+ion-loading {
+  --border-radius: 25px;
 }

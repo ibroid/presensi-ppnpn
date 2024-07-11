@@ -7,7 +7,7 @@ export default function RegisterButton() {
     <IonButton
       shape="round"
       expand="block"
-      color={"skyblue"}
+      color={"amber"}
       className="ion-margin-top"
       routerLink="/register"
 
