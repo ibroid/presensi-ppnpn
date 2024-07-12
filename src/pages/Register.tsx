@@ -16,8 +16,11 @@ import {
 	IonProgressBar,
 	useIonToast,
 	useIonRouter,
+	IonGrid,
+	IonRow,
+	IonCol,
 } from "@ionic/react";
-import { chevronBackOutline, save, saveOutline } from "ionicons/icons";
+import { chevronBackOutline, save } from "ionicons/icons";
 
 import { useContext, useState } from "react";
 import { IPegawaiResponse } from "../interfaces/IResponse";
@@ -26,7 +29,6 @@ import usePegawaiList from "../hooks/usePegawaiList";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { httpInstance } from "../utils/HttpClient";
 import { AxiosError } from "axios";
-import { error } from "console";
 import { AuthContext } from "../context/AuthContext";
 
 type RegisterForm = {
@@ -89,69 +91,77 @@ const Register: React.FC = () => {
 	return (
 		<IonPage className="pageContainer">
 			<IonHeader>
-				<IonToolbar color={"tertiary"}>
+				<IonToolbar color={"amber"}>
 					<IonButtons slot="start" onClick={() => history.goBack()}>
 						<IonBackButton
 							defaultHref="auth"
-							text=""
+							text="Kembali"
 							icon={chevronBackOutline}
-							color="light"
+							color="dark"
 						></IonBackButton>
 					</IonButtons>
 				</IonToolbar>
 			</IonHeader>
 			<IonContent fullscreen class="ion-padding">
-				<IonText>
-					<h3>Register Pengguna Baru</h3>
-				</IonText>
-				<form onSubmit={handleSubmit(onSubmit)}>
-					<IonList>
-						<IonItem>
-							<IonSelect
-								onIonChange={(e) => {
-									if (pegawais && pegawais.length > 0) {
-										setValue("name", pegawais.find((x) => x.id === e.target.value)?.fullname ?? "Isi nama panggilan saja");
-									}
-								}}
-								label="Pegawai"
-								interface="action-sheet"
-								{...register("employee_id", { required: "Tidak boleh kosong" })}
-							>
-								{pegawais?.map((row: IPegawaiResponse, i: number) => (
-									<IonSelectOption key={i} value={row.id}>
-										{row.fullname}
-									</IonSelectOption>
-								))}
-							</IonSelect>
-						</IonItem>
-						<IonItem>
-							<IonInput
-								{...register("name", { required: "Tidak boleh kosong" })}
-								label="Nama :"
-								type="text"
-							></IonInput>
-						</IonItem>
-						<IonItem>
-							<IonInput
-								{...register("identifier", { required: "Tidak boleh kosong" })}
-								label="Nomor HP :"
-								type="number"
-							></IonInput>
-						</IonItem>
-						<IonItem>
-							<IonInput
-								{...register("password", { required: "Tidak boleh kosong" })}
-								label="Password :"
-								type="password"
-							></IonInput>
-						</IonItem>
-						{loading && <IonProgressBar type="indeterminate" />}
-					</IonList>
-					<IonButton disabled={loading} type="submit" expand="full" color={"skyblue"}>
-						<strong>Simpan</strong>
-						<IonIcon slot="start" icon={save}></IonIcon>
-					</IonButton>
-				</form>
+				<IonGrid>
+					<IonRow class="ion-justify-content-between ion-align-items-center">
+						<IonCol size="12" sizeXs="12" sizeMd="6" sizeLg="4" sizeXl="3" offsetMd="3" offsetLg="4" offsetXl="4">
+							<IonText style={{ textAlign: "center" }}>
+								<h3>Register Pengguna Baru</h3>
+							</IonText>
+						</IonCol>
+						<IonCol >
+							<form onSubmit={handleSubmit(onSubmit)}>
+								<IonList>
+									<IonItem>
+										<IonSelect
+											onIonChange={(e) => {
+												if (pegawais && pegawais.length > 0) {
+													setValue("name", pegawais.find((x) => x.id === e.target.value)?.fullname ?? "Isi nama panggilan saja");
+												}
+											}}
+											label="Pegawai"
+											interface="action-sheet"
+											{...register("employee_id", { required: "Tidak boleh kosong" })}
+										>
+											{pegawais?.map((row: IPegawaiResponse, i: number) => (
+												<IonSelectOption key={i} value={row.id}>
+													{row.fullname}
+												</IonSelectOption>
+											))}
+										</IonSelect>
+									</IonItem>
+									<IonItem>
+										<IonInput
+											{...register("name", { required: "Tidak boleh kosong" })}
+											label="Nama :"
+											type="text"
+										></IonInput>
+									</IonItem>
+									<IonItem>
+										<IonInput
+											{...register("identifier", { required: "Tidak boleh kosong" })}
+											label="Nomor HP :"
+											type="number"
+										></IonInput>
+									</IonItem>
+									<IonItem>
+										<IonInput
+											{...register("password", { required: "Tidak boleh kosong" })}
+											label="Password :"
+											type="password"
+										></IonInput>
+									</IonItem>
+									{loading && <IonProgressBar type="indeterminate" />}
+								</IonList>
+								<IonButton disabled={loading} type="submit" expand="full" color={"skyblue"}>
+									<strong>Simpan</strong>
+									<IonIcon slot="start" icon={save}></IonIcon>
+								</IonButton>
+							</form>
+						</IonCol>
+					</IonRow>
+				</IonGrid>
 			</IonContent>
 		</IonPage>
 	);
