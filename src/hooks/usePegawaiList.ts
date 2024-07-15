@@ -15,7 +15,7 @@ export default function usePegawaiList() {
         controller = new AbortController();
         setLoading(true);
 
-        httpInstance(null).get<IPegawaiResponse[]>("/pegawais", { signal: controller.signal })
+        httpInstance().get<IPegawaiResponse[]>("/pegawais", { signal: controller.signal })
             .then(res => {
                 setPegawais(res.data)
             })

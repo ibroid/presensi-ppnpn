@@ -22,7 +22,7 @@ export default function useAppVersion() {
 
     try {
 
-      const response = await httpInstance(null).get<AppVersion>("/app_version");
+      const response = await httpInstance().get<AppVersion>("/app_version");
       setAppVersion(response.data);
 
     } catch (error) {

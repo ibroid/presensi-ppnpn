@@ -54,7 +54,7 @@ const Auth: React.FC = () => {
 			duration: 2000
 		})
 
-		httpInstance(null).post<LoginResponse>("/login", data)
+		httpInstance().post<LoginResponse>("/login", data)
 			.then(res => {
 				deState.setUser(res.data.user)
 				deState.setToken(res.data.token)
@@ -88,9 +88,6 @@ const Auth: React.FC = () => {
 			})
 	}
 
-	const invalidSubmit = () => {
-		console.log("is error :", errors)
-	}
 
 	useEffect(() => {
 		deState.checkAuth()
@@ -130,7 +127,7 @@ const Auth: React.FC = () => {
 						</IonText>
 					</IonRow>
 				</IonGrid>
-				<form onSubmit={handleSubmit(validSubmit, invalidSubmit)}>
+				<form onSubmit={handleSubmit(validSubmit)}>
 					<IonInput
 						shape="round"
 						className="ion-invalid ion-touched"
