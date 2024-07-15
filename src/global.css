@@ -45,7 +45,6 @@
   --ion-color-contrast-rgb: var(--ion-color-rose-contrast-rgb);
   --ion-color-shade: var(--ion-color-rose-shade);
   --ion-color-tint: var(--ion-color-rose-tint);
-<<<<<<< HEAD
 }
 
 .ion-color-violet {
@@ -86,12 +85,6 @@
 
 ion-datetime {
   --background: #e1eaf6;
-=======
-}
-
-ion-datetime {
-  --background: #E1EAF6;
->>>>>>> main
   --background-rgb: 42, 115, 138;
 
   border-radius: 16px;
@@ -104,7 +97,6 @@ ion-datetime {
   max-width: 480px;
   margin: 0 auto;
 }
-<<<<<<< HEAD
 body {
   background-color: azure;
 }
@@ -117,9 +109,3 @@ html {
 ion-loading {
   --border-radius: 25px;
 }
-=======
-
-body {
-  background-color: azure
-}
->>>>>>> main

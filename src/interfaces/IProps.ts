@@ -30,12 +30,8 @@ export interface IPresensiListByDateProp {
     pegawaiId: number;
 }
 
-<<<<<<< HEAD
 export interface IPresensiDetail { row: any, i: number, pegawaiId: number }
 
 export type DefaultHeaderProps = {
     title: string
 }
-=======
-export interface IPresensiDetail { row: any, i: number, pegawaiId: number }
->>>>>>> main
