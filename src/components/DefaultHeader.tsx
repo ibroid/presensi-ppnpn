@@ -13,7 +13,7 @@ export default function DefaultHeader({ title }: DefaultHeaderProps) {
   return (
     <IonHeader>
       <IonToolbar color={'tertiary'} >
-        <IonTitle>{title}</IonTitle>
+        <IonTitle slot="start">{title}</IonTitle>
         <IonChip slot='end' onClick={() => {
           alert({
             animated: true,
@@ -30,7 +30,7 @@ export default function DefaultHeader({ title }: DefaultHeaderProps) {
                 handler: () => {
                   deState.setToken(null)
                   deState.setUser(null)
-                  route.push('/auth', "root", "replace")
+                  route.push('/auth', "root", "pop")
                 }
               }
             ]
@@ -39,7 +39,7 @@ export default function DefaultHeader({ title }: DefaultHeaderProps) {
           <IonAvatar >
             <img alt="Employee avatar" src={state.user?.employee?.photos} />
           </IonAvatar>
-          <IonLabel color={"light"}>{state.user && state.user.name}</IonLabel>
+          <IonLabel color={"light"}>Logout</IonLabel>
         </IonChip>
       </IonToolbar>
     </IonHeader>

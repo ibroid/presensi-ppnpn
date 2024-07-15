@@ -1,13 +1,6 @@
 import {
   IonContent,
-  IonGrid,
-  IonHeader,
   IonPage,
-  IonTitle,
-  IonToolbar,
-  IonRow,
-  IonDatetime,
-  IonText,
   IonProgressBar,
   IonList,
   IonItem,
@@ -17,9 +10,10 @@ import {
   useIonToast,
   useIonViewDidEnter,
   useIonViewWillLeave,
-  IonChip,
-  IonAvatar,
-  useIonActionSheet
+  useIonActionSheet,
+  IonGrid,
+  IonRow,
+  IonCol
 } from '@ionic/react';
 
 import {
@@ -39,13 +33,13 @@ import { AuthContext } from '../context/AuthContext';
 import { AxiosError } from 'axios';
 import { CreatePresenceResponse, Presence } from '../interfaces/IResponse';
 import DefaultHeader from '../components/DefaultHeader';
+import MapGL from '../components/MapGL';
 
 
 const Presensi: React.FC = () => {
 
-  const [loading, setLoading] = useState<boolean>(false);
   const { state } = useContext(AuthContext);
-  const [location, setLocation] = useState<string | null>();
+  const [location, setLocation] = useState<Position>();
   const [toast] = useIonToast()
   const [dataPresensiDatang, setDataPresensiDatang] = useState<Presence>();
   const [dataPresensiPulang, setDataPresensiPulang] = useState<Presence>();
@@ -55,7 +49,7 @@ const Presensi: React.FC = () => {
   let abortController: { signal: AbortSignal; abort: () => void };
 
   const savePresensi = useCallback(async (session: number, status: number) => {
-    setLoading(true)
+
     const date = new Date();
     const todayYmd =
       date.getFullYear() +
@@ -110,7 +104,6 @@ const Presensi: React.FC = () => {
         })
       })
 
-      .finally(() => setLoading(false))
   }, [location, selectedPresenceDate])
 
   const statusOption = useCallback((session: number) => {
@@ -152,7 +145,6 @@ const Presensi: React.FC = () => {
   const fetchPresensi = useCallback(async (selectedDate: string) => {
     abortController = new AbortController()
     const signal = abortController.signal;
-    setLoading(true)
 
     httpInstance(state.token).get<Presence[]>("/presence?date=" + selectedDate, { signal })
       .then((res) => {
@@ -194,16 +186,18 @@ const Presensi: React.FC = () => {
         })
       })
 
-      .finally(() => setLoading(false))
   }, [])
 
   useIonViewDidEnter(() => {
-    Geolocation.getCurrentPosition().then((data: Position) => setLocation(`${data.coords.latitude} ${data.coords.longitude}`)).catch((err: any) => setLocation("Gagal Mendapatkan Lokasi. Error: " + err.message))
+    Geolocation.getCurrentPosition({
+      enableHighAccuracy: true,
+    })
+      .then((data: Position) => setLocation(data))
+      .catch((err: any) => {
 
-    const date = new Date();
-    const todayYmd = date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate();
-    fetchPresensi(todayYmd)
-  }, [])
+      })
+
+  }, [location])
 
   useIonViewWillLeave(() => abortController.abort())
 
@@ -211,51 +205,8 @@ const Presensi: React.FC = () => {
     <IonPage className="pageContainer" >
       <DefaultHeader title='Presensi' />
       <IonContent fullscreen >
-        <IonGrid className='ion-margin-top-sm'>
-          <IonText className='ion-text-center'><p>Kalender Kehadiran</p></IonText>
-          <IonRow class="ion-no-margin-top ion-justify-content-center ion-align-items-center">
-            <IonDatetime
-              onIonChange={async (e) => {
-                const selectedDate = String(e.target.value).replace('T21:43:00+07:00', '')
-                const todayYmd = selectedDate.split("T")[0]
-                setSelectedPresenceDate(todayYmd)
-                fetchPresensi(todayYmd)
-              }}
-              presentation="date" color={"primary"} showDefaultTimeLabel={false}></IonDatetime>
-          </IonRow>
-        </IonGrid>
-        <IonList inset={true}>
-          <IonListHeader>
-            <IonLabel>
-              <h3>Riwayat Presensi</h3>
-              <Clock format={'HH:mm:ss'} ticking={true} timezone='Asia/Jakarta' />
-            </IonLabel>
-          </IonListHeader>
-          {loading ? <IonProgressBar type='indeterminate' ><h1> Loading...</h1></IonProgressBar> : <></>}
-          <IonItem disabled={loading} button={true} onClick={() => statusOption(1)}>
-            <IonIcon icon={sunny} color='warning' slot="start"></IonIcon>
-            <IonLabel>
-              <h2>Presensi Datang</h2>
-              {dataPresensiDatang?.present_time ? <p color='danger'>Anda Sudah Presensi</p> : <p color='danger'>Anda Belum Presensi</p>}
-            </IonLabel>
-            <p>{dataPresensiDatang?.present_time ?? "Klik Disini"}</p>
-          </IonItem>
-          <IonItem disabled={loading} button={true} onClick={() => statusOption(2)}>
-            <IonIcon icon={moon} color='primary' slot="start"></IonIcon>
-            <IonLabel>
-              <h2>Presensi Pulang</h2>
-              {dataPresensiPulang?.present_time ? <p color='danger'>Anda Sudah Presensi</p> : <p color='danger'>Anda Belum Presensi</p>}
-            </IonLabel>
-            <p>{dataPresensiPulang?.present_time ?? "Klik Disini"}</p>
-          </IonItem>
-          <IonItem>
-            <IonIcon icon={locate} color='danger' slot="start"></IonIcon>
-            <IonLabel>
-              <h2>Posisi GPS Anda</h2>
-              <p>{location}</p>
-            </IonLabel>
-          </IonItem>
-        </IonList>
+        {location && <MapGL latitude={location.coords.latitude} longitude={location.coords.longitude} />}
+
       </IonContent>
     </IonPage>
   );

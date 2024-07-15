@@ -35,3 +35,14 @@ export interface IPresensiDetail { row: any, i: number, pegawaiId: number }
 export type DefaultHeaderProps = {
     title: string
 }
+
+export type Position = {
+    coords(coords: any): void | PromiseLike<void>;
+    latitude: number;
+    longitude: number;
+    accuracy: number;
+    altitudeAccuracy: number | null | undefined;
+    altitude: number | null;
+    speed: number | null;
+    heading: number | null;
+}
