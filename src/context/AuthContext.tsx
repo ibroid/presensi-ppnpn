@@ -1,5 +1,6 @@
 import * as React from "react";
 import { IAuthContext } from "../interfaces/IContext";
+<<<<<<< HEAD
 import { httpInstance } from "../utils/HttpClient";
 import { Preferences } from '@capacitor/preferences';
 
@@ -29,17 +30,32 @@ export const AuthContext = React.createContext<{
 		setToken: (token: string | null) => void,
 		checkAuth: () => Promise<null | User>,
 		setUser: (user: User | null) => void
+=======
+import { Storage } from "@ionic/storage";
+import { supabase } from "../utils/SupabaseClient";
+
+export const AuthContext = React.createContext<{
+	state: IAuthContext, deState: {
+		setLoading: (par: boolean) => void,
+		setToken: (token: string, refresh: string) => void,
+		checkAuth: () => Promise<void>
+>>>>>>> main
 	}
 }>({
 	state: {
 		isLoading: true,
+<<<<<<< HEAD
 		token: "",
 		user: null
+=======
+		token: ""
+>>>>>>> main
 	},
 	deState: {
 		setLoading: function (par: boolean): void {
 			throw new Error("Function not implemented.");
 		},
+<<<<<<< HEAD
 		setToken: function (token: string | null): void {
 			throw new Error("Function not implemented.");
 		},
@@ -51,6 +67,14 @@ export const AuthContext = React.createContext<{
 		setUser(user: User | null) {
 			throw new Error("Function not implemented.");
 		},
+=======
+		setToken: function (token: string, refresh: string): void {
+			throw new Error("Function not implemented.");
+		},
+		checkAuth: function (): Promise<void> {
+			throw new Error("Function not implemented.");
+		}
+>>>>>>> main
 	}
 });
 
@@ -60,6 +84,7 @@ type AuthContextProviderProps = {
 
 
 export const AuthProvider = ({ children }: AuthContextProviderProps) => {
+<<<<<<< HEAD
 
 	const [state, setState] = React.useState<IAuthContext<null | User>>({
 		isLoading: false,
@@ -124,4 +149,46 @@ export const AuthProvider = ({ children }: AuthContextProviderProps) => {
 			{children}
 		</AuthContext.Provider>
 	);
+=======
+	const [state, setState] = React.useState<IAuthContext>({
+		isLoading: true,
+		token: ""
+	})
+
+	const [storage, setStorage] = React.useState<Storage>();
+
+	React.useEffect(() => {
+		const bootstrapping = async (): Promise<void> => {
+			const newStorage = new Storage({
+				name: 'kuyabatokdb'
+			});
+
+			const storage = await newStorage.create();
+
+			setStorage(storage)
+		}
+
+		bootstrapping()
+	}, [])
+
+	const deState = {
+		setLoading: (par: boolean) => setState(prev => {
+			prev.isLoading = par;
+			return { ...prev }
+		}),
+		setToken: (token: string, refresh: string) => setState(prev => {
+			prev.token = token;
+			storage?.set('refresh', refresh);
+			return { ...prev };
+		}),
+		checkAuth: async () => {
+			const refresh_token: string = await storage?.get('refresh');
+			console.log(refresh_token)
+
+
+		}
+	}
+
+	return <AuthContext.Provider value={{ state, deState }} >{children}</AuthContext.Provider>
+>>>>>>> main
 }

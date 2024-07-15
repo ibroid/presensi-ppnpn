@@ -7,7 +7,11 @@ export interface IJabatanResponse {
 export interface IPegawaiResponse {
     "id": number,
     "fullname": string,
+<<<<<<< HEAD
     "employee_level_id": number,
+=======
+    "jabatan_id": number,
+>>>>>>> main
     "created_at": Date,
     "updated_at": null | Date,
     "photos": string
@@ -46,6 +50,7 @@ export interface IPpnpnWithPresensi {
     "updated_at": null | Date,
     "photos": string,
     presensi: IPresensiResponse[]
+<<<<<<< HEAD
 }
 
 export type Presence = {
@@ -74,4 +79,6 @@ export type Activity = {
     doing_date: Date;
     created_at: Date;
     updated_at: Date;
+=======
+>>>>>>> main
 }
