@@ -1,8 +1,8 @@
 import { IonAvatar, IonChip, IonHeader, IonLabel, IonTitle, IonToolbar, useIonAlert, useIonRouter } from "@ionic/react";
 import { DefaultHeaderProps } from "../interfaces/IProps";
-import { useContext, useEffect } from "react";
+import { useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
-
+import "../style/header.css";
 
 
 export default function DefaultHeader({ title }: DefaultHeaderProps) {
@@ -11,8 +11,8 @@ export default function DefaultHeader({ title }: DefaultHeaderProps) {
   const route = useIonRouter()
 
   return (
-    <IonHeader>
-      <IonToolbar color={'tertiary'} >
+    <IonHeader class="ion-no-border">
+      <IonToolbar color={'rose'} >
         <IonTitle slot="start">{title}</IonTitle>
         <IonChip slot='end' onClick={() => {
           alert({
