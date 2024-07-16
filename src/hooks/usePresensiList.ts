@@ -1,22 +1,21 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { Presence } from "../interfaces/IResponse";
 import { httpInstance } from "../utils/HttpClient";
 import { AuthContext } from "../context/AuthContext";
 import { AxiosError } from "axios";
 
 export default function usePresensiList() {
+    const { state } = useContext(AuthContext);
+    const controllerRef = useRef<{ signal: AbortSignal; abort: () => void } | null>(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(false);
     const [presensi, setPresensi] = useState<Presence[]>([]);
-    const { state } = useContext(AuthContext);
     const [errorMessage, setErrorMessage] = useState<string>("");
 
-    let controller: { signal: AbortSignal; abort: () => void };
-
     useEffect(() => {
-        controller = new AbortController()
+        controllerRef.current = new AbortController();
         setLoading(true);
-        const signal = controller.signal;
+        const signal = controllerRef.current.signal;
         httpInstance(state.token).get<Presence[]>("/presence", { signal })
             .then((res) => {
                 setPresensi(res.data);
@@ -29,11 +28,14 @@ export default function usePresensiList() {
                 }
                 setError(true);
             })
+            .finally(() => setLoading(false));
 
-            .finally(() => setLoading(false))
-
-        return () => controller.abort();
-    }, [])
+        return () => {
+            if (controllerRef.current) {
+                controllerRef.current.abort();
+            }
+        };
+    }, [state.token]);
 
     return { loading, error, presensi, errorMessage };
 }

@@ -21,7 +21,7 @@ export default function MapGL({ latitude, longitude }: MapGLProps) {
     <ReactMapGL
       mapboxAccessToken={process.env.REACT_APP_MAPBOX_TOKEN}
       {...viewport}
-      style={{ width: 400, maxHeight: 400, margin: 'auto', marginTop: 10 }}
+      style={{ width: 400, maxHeight: 600, margin: 'auto', marginTop: 10 }}
       mapStyle="mapbox://styles/mapbox/streets-v9"
       reuseMaps={true}
       attributionControl={false}
@@ -35,7 +35,7 @@ export default function MapGL({ latitude, longitude }: MapGLProps) {
           latitude={latitude}
           longitude={longitude}
           draggable={true}
-          offset={[10 * viewport.zoom, -25 * viewport.zoom]}
+          offset={[10 * viewport.zoom, -20 * viewport.zoom]}
           onDragEnd={(e: any) => {
             console.log(e)
           }}

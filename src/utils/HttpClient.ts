@@ -10,9 +10,6 @@ export const httpInstance = (token?: string | null): AxiosInstance => {
     axiosInstance.defaults.headers.common["Authorization"] = `Bearer ${token}`
   }
 
-  axiosInstance.defaults.withXSRFToken = true;
-
-
   axiosInstance.defaults.headers.common["Content-Type"] = "application/json"
   axiosInstance.defaults.headers.common["Accept"] = "application/json"
   return axiosInstance

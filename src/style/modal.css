@@ -1,0 +1,31 @@
+ion-modal#modal-presence {
+  --max-width: 250px;
+  --max-height: 300px;
+  --border-radius: 6px;
+  --box-shadow: 0 28px 48px rgba(0, 0, 0, 0.4);
+}
+
+#radio-presence {
+  display: flex;
+  justify-content: space-between;
+  flex-direction: column;
+  gap: 16px;
+}
+
+ion-radio.ios::part(container) {
+  width: 20px;
+  height: 20px;
+
+  border: 2px solid #ddd;
+  border-radius: 4px;
+}
+
+.radio-checked.ios::part(container) {
+  border-color: var(--ion-color-amber);
+}
+
+ion-modal#modal-title {
+  align-items: center;
+  padding: 0px;
+  margin: 0px;
+}

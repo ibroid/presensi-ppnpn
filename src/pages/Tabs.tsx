@@ -8,7 +8,7 @@ import {
 } from "@ionic/react";
 import { Redirect, Route } from "react-router";
 import Presensi from "./Presensi";
-import { location, listOutline, receiptOutline, barChart, barChartOutline } from "ionicons/icons";
+import { listOutline, receiptOutline, barChartOutline, locationOutline } from "ionicons/icons";
 import { useContext } from 'react';
 import { AuthContext } from '../context/AuthContext';
 import Activity from "./Activity";
@@ -32,7 +32,7 @@ const Tabs: React.FC = () => {
 
 			<IonTabBar slot="bottom" color={'rose'} className="footerContainer">
 				<IonTabButton tab="tab1" href="/app/presensi">
-					<IonIcon size="small" icon={location} />
+					<IonIcon size="small" icon={locationOutline} />
 					<IonLabel>Presensi</IonLabel>
 				</IonTabButton>
 

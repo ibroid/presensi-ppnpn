@@ -1,4 +1,5 @@
 ion-tab-bar {
   border-radius: 20px;
   margin: 10px;
+  /* z-index: -1; */
 }
