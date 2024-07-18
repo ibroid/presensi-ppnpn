@@ -1,6 +1,6 @@
 ion-modal#modal-presence {
   --max-width: 250px;
-  --max-height: 300px;
+  --max-height: 400px;
   --border-radius: 6px;
   --box-shadow: 0 28px 48px rgba(0, 0, 0, 0.4);
 }

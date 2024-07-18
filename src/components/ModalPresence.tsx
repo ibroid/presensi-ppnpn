@@ -136,6 +136,9 @@ export default function ModalPresence({ isOpen, close }: ModalPresenceProps) {
                 <IonRow>
                   <IonRadio value={2} alignment="start">Cuti</IonRadio>
                 </IonRow>
+                <IonRow>
+                  <IonRadio value={5} alignment="start">Dinas Luar</IonRadio>
+                </IonRow>
               </IonGrid>
             </IonRadioGroup>
           </IonRow>
