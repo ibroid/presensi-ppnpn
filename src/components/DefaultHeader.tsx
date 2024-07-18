@@ -6,7 +6,7 @@ import "../style/header.css";
 
 
 export default function DefaultHeader({ title }: DefaultHeaderProps) {
-  const { state, deState } = useContext(AuthContext)
+  const { state, dispatch } = useContext(AuthContext)
   const [alert] = useIonAlert()
   const route = useIonRouter()
 
@@ -28,8 +28,8 @@ export default function DefaultHeader({ title }: DefaultHeaderProps) {
               {
                 text: "Logout",
                 handler: () => {
-                  deState.setToken(null)
-                  deState.setUser(null)
+                  dispatch({ type: "SET_TOKEN", payload: null })
+                  dispatch({ type: "SET_USER", payload: null })
                   route.push('/auth', "root", "pop")
                 }
               }

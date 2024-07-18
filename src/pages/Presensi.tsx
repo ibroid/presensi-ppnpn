@@ -33,6 +33,8 @@ const Presensi: React.FC = () => {
   const [location, setLocation] = useState<Position>();
   const [ionToast] = useIonToast();
 
+  const { error, errorMessage, loading, presensi } = usePresensiList();
+
 
   useIonViewDidEnter(() => {
     Geolocation.getCurrentPosition({
@@ -48,41 +50,22 @@ const Presensi: React.FC = () => {
         })
       })
 
-  }, [location])
+  }, [])
 
   return (
     <IonPage className="pageContainer" >
       <DefaultHeader title='Presensi' />
       <IonContent fullscreen >
         {location
-          ? <PresentProvider><LocationReady location={location} /></PresentProvider>
+          ? <LocationReady location={location} />
           : <NoLocation />}
-
+        {presensi.map((row: any) => <p key={row.id}>{row.waktu}</p>)}
       </IonContent>
     </IonPage>
   );
 };
 
 function LocationReady({ location }: Position | any) {
-
-  const { dispatch } = useContext(PresentContext);
-
-  const { error, loading, presensi, errorMessage } = usePresensiList()
-
-  useEffect(() => {
-    dispatch!({ type: "SET_LOCATION", payload: location })
-    if (!error && !loading) {
-      dispatch!({ type: "SET_TODAY_PRESENT", payload: presensi })
-    }
-  }, [location, error, loading, dispatch, presensi])
-
-  if (loading) {
-    return <IonProgressBar type='indeterminate' />
-  }
-
-  if (error && errorMessage) {
-    return <IonText>{errorMessage}</IonText>
-  }
 
   return (
     <IonGrid className='ion-margin-top'>
@@ -98,7 +81,9 @@ function LocationReady({ location }: Position | any) {
         </IonText>
       </IonRow>
       <IonRow className='ion-justify-content-center'>
-        <FormPresence />
+        <PresentProvider>
+          <FormPresence />
+        </PresentProvider>
       </IonRow>
     </IonGrid>
   )

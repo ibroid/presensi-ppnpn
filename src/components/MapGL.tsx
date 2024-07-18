@@ -1,7 +1,5 @@
-import ReactMapGL, { Marker } from 'react-map-gl';
-import React, { useEffect, useState } from 'react'; // Ensure React is imported if using JSX
-import { IonIcon } from '@ionic/react';
-import { locationOutline } from 'ionicons/icons';
+import { Map, Marker } from 'react-map-gl';
+import { useState } from 'react'; // Ensure React is imported if using JSX
 
 interface MapGLProps {
   latitude?: number;
@@ -17,8 +15,9 @@ export default function MapGL({ latitude, longitude }: MapGLProps) {
     width: '100vw',
     height: '100vh'
   });
+
   return (
-    <ReactMapGL
+    <Map
       mapboxAccessToken={process.env.REACT_APP_MAPBOX_TOKEN}
       {...viewport}
       style={{ width: 400, maxHeight: 600, margin: 'auto', marginTop: 10 }}
@@ -27,23 +26,19 @@ export default function MapGL({ latitude, longitude }: MapGLProps) {
       attributionControl={false}
       onViewPortChange={({ viewState }: any) => setViewport(viewState)}
     >
-      <>
-        <Marker
-          pitchAlignment="viewport"
-          key="marker-1"
-          anchor="center"
-          latitude={latitude}
-          longitude={longitude}
-          draggable={true}
-          offset={[10 * viewport.zoom, -20 * viewport.zoom]}
-          onDragEnd={(e: any) => {
-            console.log(e)
-          }}
-        >
-        </Marker>
-
-      </>
-
-    </ReactMapGL>
+      <Marker
+        pitchAlignment="viewport"
+        key="marker-1"
+        anchor="center"
+        latitude={latitude}
+        longitude={longitude}
+        draggable={true}
+        offset={[10 * viewport.zoom, -20 * viewport.zoom]}
+        onDragEnd={(e: any) => {
+          console.log(e)
+        }}
+      >
+      </Marker>
+    </Map>
   )
 }

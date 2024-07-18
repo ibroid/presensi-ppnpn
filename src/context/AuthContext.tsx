@@ -1,6 +1,5 @@
 import * as React from "react";
 import { IAuthContext } from "../interfaces/IContext";
-import { httpInstance } from "../utils/HttpClient";
 import { Preferences } from '@capacitor/preferences';
 
 export type User = {
@@ -23,105 +22,54 @@ export type User = {
 	}
 }
 
-export const AuthContext = React.createContext<{
-	state: IAuthContext<null | User>, deState: {
-		setLoading: (par: boolean) => void,
-		setToken: (token: string | null) => void,
-		checkAuth: () => Promise<null | User>,
-		setUser: (user: User | null) => void
-	}
-}>({
+export type AuthContextType = {
+	state: any,
+	dispatch: React.Dispatch<any>
+}
+
+export const AuthContext = React.createContext<AuthContextType>({
 	state: {
-		isLoading: true,
-		token: "",
-		user: null
+		isLoading: true, token: null, user: null
 	},
-	deState: {
-		setLoading: function (par: boolean): void {
-			throw new Error("Function not implemented.");
-		},
-		setToken: function (token: string | null): void {
-			throw new Error("Function not implemented.");
-		},
-		checkAuth: function (): Promise<null | User> {
-			return new Promise<null | User>((resolve, reject) => {
-				resolve(null);
-			})
-		},
-		setUser(user: User | null) {
-			throw new Error("Function not implemented.");
-		},
+	dispatch: () => { }
+})
+
+const authReducer = (state: any, action: { type: "SET_LOADING" | "SET_TOKEN" | "SET_USER", payload?: any }) => {
+	switch (action.type) {
+		case "SET_LOADING":
+			return { ...state, isLoading: action.payload };
+		case "SET_TOKEN":
+			if (action.payload == null) {
+				Preferences.remove({ key: 'token' });
+			} else {
+				Preferences.set({
+					key: 'token',
+					value: action.payload,
+				});
+			}
+			return { ...state, token: action.payload };
+		case "SET_USER":
+			return { ...state, user: action.payload };
 	}
-});
+};
 
 type AuthContextProviderProps = {
 	children: React.ReactNode
 };
 
+const InitialValue: IAuthContext<null | User> = {
+	isLoading: true,
+	token: null,
+	user: null
+}
 
 export const AuthProvider = ({ children }: AuthContextProviderProps) => {
+	const [state, dispatch] = React.useReducer(authReducer, InitialValue);
 
-	const [state, setState] = React.useState<IAuthContext<null | User>>({
-		isLoading: false,
-		token: null,
-		user: null
-	});
-
-
-	const deState = {
-		setLoading: (par: boolean) =>
-			setState((prev) => {
-				prev.isLoading = par;
-				return { ...prev };
-			}),
-		setToken: async (token: string | null) => {
-			if (token == null) {
-				await Preferences.remove({ key: 'token' });
-			} else {
-				await Preferences.set({
-					key: 'token',
-					value: token,
-				});
-			}
-
-			setState((prev) => {
-				prev.token = token;
-				return { ...prev };
-			})
-		},
-		checkAuth: async () => {
-			deState.setLoading(true);
-			const { value: token } = await Preferences.get({ key: 'token' });
-			if (token) {
-				const httpClient = httpInstance(token);
-				try {
-					const res = await httpClient.get<{ user: User }>("/user");
-					setState({
-						isLoading: false,
-						token: token,
-						user: res.data.user
-					});
-				} catch (error) {
-					setState({
-						isLoading: false,
-						token: "",
-						user: null
-					});
-				}
-			}
-			return null
-		},
-		setUser(user: User | null) {
-			setState((prev) => {
-				prev.user = user;
-				return { ...prev };
-			});
-		}
-	};
 
 	return (
-		<AuthContext.Provider value={{ state, deState }}>
+		<AuthContext.Provider value={{ state, dispatch }}>
 			{children}
 		</AuthContext.Provider>
 	);
-}
+};

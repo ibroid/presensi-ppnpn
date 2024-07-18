@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { httpInstance } from "../utils/HttpClient";
 import { AxiosError } from "axios";
 
@@ -18,8 +18,7 @@ export default function useAppVersion() {
   const [error, setError] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string>("");
 
-  const fetchAppVersion = async () => {
-
+  const fetchAppVersion = useCallback(async () => {
     try {
 
       const response = await httpInstance().get<AppVersion>("/app_version");
@@ -33,11 +32,11 @@ export default function useAppVersion() {
     }
 
     setLoading(false)
-  }
+  }, [])
 
   useEffect(() => {
     fetchAppVersion();
-  }, []);
+  }, [fetchAppVersion]);
 
   return { appVersion, loading, error, errorMessage };
 

@@ -15,9 +15,11 @@ import {
 	useIonLoading,
 	IonImg,
 	IonCol,
+	useIonViewDidEnter,
+	IonLoading,
 } from "@ionic/react";
 import { logIn } from "ionicons/icons";
-import { useContext, useEffect } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 
 import { useForm } from "react-hook-form";
 import { httpInstance } from "../utils/HttpClient";
@@ -26,6 +28,7 @@ import { AxiosError } from "axios";
 import RegisterButton from "../components/RegisterButton";
 import { GlobalContext } from "../context/GlobalContext";
 import "../style/auth.css";
+import useCheckAuth from "../hooks/useCheckAuth";
 
 type LoginModel = {
 	phone: string;
@@ -40,24 +43,19 @@ type LoginResponse = {
 const Auth: React.FC = () => {
 
 	const { register, handleSubmit, formState: { errors } } = useForm<LoginModel>()
-	const { deState, state } = useContext(AuthContext)
+	const { dispatch } = useContext(AuthContext)
 	const { server_variable } = useContext(GlobalContext)
 	const [toast] = useIonToast()
 	const route = useIonRouter()
-	const [ionLoadingStart, ionLoadingClose] = useIonLoading()
+	const [ionLoading, setIonLoading] = useState(false);
 
-	const validSubmit = async (data: LoginModel) => {
-
-		await ionLoadingStart({
-			message: "Loading...",
-			spinner: "dots",
-			duration: 2000
-		})
+	const validSubmit = useCallback(async (data: LoginModel) => {
+		setIonLoading(true)
 
 		httpInstance().post<LoginResponse>("/login", data)
 			.then(res => {
-				deState.setUser(res.data.user)
-				deState.setToken(res.data.token)
+				dispatch({ type: "SET_USER", payload: res.data.user })
+				dispatch({ type: "SET_TOKEN", payload: res.data.token })
 				route.push("/app", "root", "replace")
 			})
 			.catch(err => {
@@ -84,33 +82,42 @@ const Auth: React.FC = () => {
 				}
 			})
 			.finally(() => {
-				ionLoadingClose()
+				setIonLoading(false)
 			})
-	}
+	}, [dispatch, route, toast])
 
+	const { isLoading, error, errorMessage, user, token } = useCheckAuth()
+	const router = useIonRouter()
 
 	useEffect(() => {
-		deState.checkAuth()
-	}, [])
 
-	useEffect(() => {
-		if (state.isLoading) {
-			ionLoadingStart({
-				duration: 2000,
-				message: "Memeriksa User...",
-				spinner: "dots"
+		if (error) {
+			toast({
+				message: errorMessage,
+				duration: 3000,
+				color: "danger",
+				buttons: [{
+					text: "Ok",
+					role: "cancel",
+				}]
 			})
-		} else {
-			ionLoadingClose()
-			if (state.user) {
-				route.push("/app", "root", "replace")
+		}
+
+
+		if (!isLoading) {
+			if (user !== null) {
+				dispatch({ type: "SET_USER", payload: user })
+				dispatch({ type: "SET_TOKEN", payload: token })
+				router.push("/app", "root", "replace")
 			}
 		}
-	}, [state.isLoading])
+
+	}, [isLoading, error, toast, errorMessage, user, dispatch, router, token])
+
 
 	return (
 		<IonPage className="pageContainer">
-			<IonHeader >
+			<IonHeader className="ion-no-border">
 				<IonToolbar color="rose">
 					<IonTitle>Login Pengguna</IonTitle>
 				</IonToolbar>
@@ -174,6 +181,7 @@ const Auth: React.FC = () => {
 						<a rel="noreferrer" target="_blank" href="https://mmaliki.my.id">Visit Developer</a>
 					</p>
 				</IonText>
+				<IonLoading isOpen={ionLoading || isLoading} message="Loading ..." />
 			</IonContent>
 		</IonPage >
 

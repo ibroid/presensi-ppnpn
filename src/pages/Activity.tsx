@@ -1,11 +1,14 @@
-import { IonButton, IonContent, IonHeader, IonIcon, IonInput, IonItem, IonLabel, IonList, IonListHeader, IonPage, IonProgressBar, IonSelect, IonSelectOption, IonText, IonTextarea, IonTitle, IonToolbar, useIonToast, useIonViewDidEnter, useIonViewWillLeave } from "@ionic/react";
-import { checkbox, create, bodyOutline, time, document } from "ionicons/icons";
+import { IonButton, IonCol, IonContent, IonGrid, IonHeader, IonIcon, IonInput, IonItem, IonLabel, IonList, IonListHeader, IonPage, IonProgressBar, IonRow, IonSelect, IonSelectOption, IonText, IonTextarea, IonTitle, IonToolbar, useIonToast, useIonViewDidEnter, useIonViewWillLeave } from "@ionic/react";
+import { checkbox, create, bodyOutline, time, document, addCircle } from "ionicons/icons";
 import { useForm } from "react-hook-form";
 import { httpInstance } from "../utils/HttpClient";
 import { AuthContext } from "../context/AuthContext";
 import { useContext, useState } from "react";
 import { AxiosError } from "axios";
 import { Activity } from "../interfaces/IResponse";
+import DefaultHeader from "../components/DefaultHeader";
+import ActivityTable from "../components/ActivityTable";
+import { ActivityProvider } from "../context/ActivityContext";
 
 
 type ActivityModel = {
@@ -105,13 +108,24 @@ export default function Activities() {
 
   return (
     <IonPage>
-      <IonHeader>
-        <IonToolbar color={"tertiary"}>
-          <IonTitle>Aktivitas</IonTitle>
-        </IonToolbar>
-      </IonHeader>
+      <DefaultHeader title="Aktivitas" />
       <IonContent fullscreen className="ion-padding">
-        <form onSubmit={handleSubmit(validSubmit)}>
+        <IonGrid>
+          <IonRow>
+            <IonCol className="ion-text-left">
+              <IonText>Aktivitas Hari Ini</IonText>
+            </IonCol>
+            <IonCol className="ion-text-right">
+              <IonButton size="small" color={"skyblue"}>
+                <IonIcon slot="start" icon={addCircle} />
+                Tambah</IonButton>
+            </IonCol>
+          </IonRow>
+        </IonGrid>
+        <ActivityProvider>
+          <ActivityTable />
+        </ActivityProvider>
+        {/* <form onSubmit={handleSubmit(validSubmit)}>
           <IonList>
             <IonItem>
               <IonIcon slot="start" icon={create} color={"primary"} />
@@ -139,8 +153,8 @@ export default function Activities() {
             {loading && <IonProgressBar type="indeterminate"></IonProgressBar>}
           </IonList>
           <IonButton disabled={loading} expand="full" type="submit">Simpan Aktivitas</IonButton>
-        </form>
-        <IonList>
+        </form> */}
+        {/* <IonList>
           <IonItem>
             <IonIcon slot="start" icon={checkbox} color={"primary"} />
             <IonListHeader>
@@ -160,8 +174,7 @@ export default function Activities() {
               </IonLabel>
             </IonItem>
           ))}
-
-        </IonList>
+        </IonList> */}
       </IonContent>
     </IonPage>
   )

@@ -101,7 +101,7 @@ export default function ModalPresence({ isOpen, close }: ModalPresenceProps) {
 
 
 
-  }, [presentStatus, getTodayDateYmd, authState.token, presentState.location, presentState.session, close, toast, loadingStart, loadingClose, dispatch])
+  }, [presentStatus, loadingStart, getTodayDateYmd, authState.token, presentState.session, presentState.location?.coords.latitude, presentState.location?.coords.longitude, presentState.todayPresence, close, dispatch, toast, loadingClose])
 
   return (
     <IonModal backdropDismiss={false} id="modal-presence" ref={modal} isOpen={isOpen}>

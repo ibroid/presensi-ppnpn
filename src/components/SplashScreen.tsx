@@ -1,7 +1,7 @@
-import { IonApp, IonContent, IonPage, IonText } from "@ionic/react";
+import { IonText } from "@ionic/react";
 import "../global.css";
 import { App } from '@capacitor/app';
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 
 export default function SplashScreen(
   { error: errorCheckVersion, errorMessage: errorCheckVersionMessage }:

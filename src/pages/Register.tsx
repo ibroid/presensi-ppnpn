@@ -5,15 +5,12 @@ import {
 	IonContent,
 	IonHeader,
 	IonIcon,
-	IonList,
 	IonInput,
-	IonItem,
 	IonPage,
 	IonSelect,
 	IonSelectOption,
 	IonText,
 	IonToolbar,
-	IonProgressBar,
 	useIonToast,
 	useIonRouter,
 	IonGrid,
@@ -23,7 +20,7 @@ import {
 } from "@ionic/react";
 import { chevronBackOutline, save } from "ionicons/icons";
 
-import { useContext, useState } from "react";
+import { useContext } from "react";
 import { IPegawaiResponse } from "../interfaces/IResponse";
 import { useHistory } from "react-router-dom";
 import usePegawaiList from "../hooks/usePegawaiList";
@@ -41,13 +38,11 @@ type RegisterForm = {
 
 const Register: React.FC = () => {
 	const [toast] = useIonToast();
-	const { deState } = useContext(AuthContext)
+	const { dispatch } = useContext(AuthContext)
 	const route = useIonRouter()
 	const [loadingStart, loadingClose] = useIonLoading();
 
 	const {
-		error: errPegawaiList,
-		loading: loadingPegawai,
 		pegawais,
 	} = usePegawaiList();
 
@@ -70,8 +65,8 @@ const Register: React.FC = () => {
 
 		httpInstance().post("/register", data)
 			.then((res) => {
-				deState.setUser(res.data.user)
-				deState.setToken(res.data.token)
+				dispatch({ type: "SET_USER", payload: res.data.user })
+				dispatch({ type: "SET_TOKEN", payload: res.data.token })
 				route.push("/app", "root", "replace")
 			})
 			.catch(err => {

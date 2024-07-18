@@ -1,41 +1,59 @@
-import { useContext, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Presence } from "../interfaces/IResponse";
 import { httpInstance } from "../utils/HttpClient";
-import { AuthContext } from "../context/AuthContext";
 import { AxiosError } from "axios";
+import { Preferences } from "@capacitor/preferences";
 
 export default function usePresensiList() {
-    const { state } = useContext(AuthContext);
-    const controllerRef = useRef<{ signal: AbortSignal; abort: () => void } | null>(null);
-    const [loading, setLoading] = useState(false);
+    let controllerRef: any = useRef<AbortController | null>(null);
+    const [loading, setLoading] = useState(true);
     const [error, setError] = useState(false);
     const [presensi, setPresensi] = useState<Presence[]>([]);
     const [errorMessage, setErrorMessage] = useState<string>("");
 
-    useEffect(() => {
-        controllerRef.current = new AbortController();
-        setLoading(true);
-        const signal = controllerRef.current.signal;
-        httpInstance(state.token).get<Presence[]>("/presence", { signal })
-            .then((res) => {
-                setPresensi(res.data);
-            })
-            .catch((err: any) => {
-                if (err instanceof AxiosError && err.isAxiosError) {
-                    setErrorMessage(err.response?.data.message ?? err.response?.data.error.message);
-                } else {
-                    setErrorMessage(err.message);
-                }
-                setError(true);
-            })
-            .finally(() => setLoading(false));
+    const fetchPresensi = useCallback(async () => {
+        const { value } = await Preferences.get({ key: "token" });
+        if (!value) {
+            setErrorMessage("Token Not Provided");
+            setError(true);
+        }
 
-        return () => {
-            if (controllerRef.current) {
-                controllerRef.current.abort();
+        try {
+            const res = await httpInstance(value).get<Presence[]>("/presence",
+                { signal: controllerRef.current?.signal }
+            );
+
+            setPresensi(res.data);
+
+        } catch (err: Error | any) {
+            console.log(err)
+            if (err instanceof AxiosError && err.isAxiosError) {
+                setErrorMessage(err.response?.data.message ?? err.response?.data.error.message);
+            } else {
+                setErrorMessage(err.message);
             }
-        };
-    }, [state.token]);
+            setError(true);
+        } finally {
+            setLoading(false);
+        }
+    }, [])
 
-    return { loading, error, presensi, errorMessage };
+    const abortFethchPresensi = () => {
+        if (controllerRef.current !== null) {
+            controllerRef.current.abort();
+        }
+    }
+
+
+    useEffect(() => {
+        if (controllerRef.current === null) {
+            controllerRef.current = new AbortController();
+        }
+
+        fetchPresensi();
+
+    }, [fetchPresensi]);
+
+    return { loading, error, presensi, errorMessage, fetchPresensi, abortFethchPresensi };
 }
+

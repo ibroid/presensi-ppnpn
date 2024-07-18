@@ -2,7 +2,7 @@ import { IonButton, IonCol, IonGrid, IonIcon, IonRow, IonText } from "@ionic/rea
 import { locationSharp } from "ionicons/icons";
 import "../style/presensi.css";
 import ModalPresence from "./ModalPresence";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useState } from "react";
 import { PresentContext } from "../context/PresentContext";
 
 export default function FormPresence() {

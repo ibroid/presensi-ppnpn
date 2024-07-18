@@ -1,6 +1,8 @@
-import { createContext, Dispatch, useReducer } from "react";
+import { createContext, Dispatch, useEffect, useReducer } from "react";
 import { Presence } from "../interfaces/IResponse";
 import { Position } from "@capacitor/geolocation";
+import usePresensiList from "../hooks/usePresensiList";
+import { IonGrid, IonProgressBar, IonRow, IonText } from "@ionic/react";
 
 type PresentContextType = {
   state: {
@@ -54,6 +56,31 @@ export function PresentProvider({ children }: { children: React.ReactNode }) {
     session: 0,
     todayPresence: [],
   });
+
+  const { error, errorMessage, loading, presensi } = usePresensiList();
+
+
+  useEffect(() => {
+    if (!error && !loading) {
+      dispatch({
+        type: "SET_TODAY_PRESENT",
+        payload: presensi
+      })
+    }
+  }, [error, loading, presensi])
+
+
+  if (loading) {
+    return <IonProgressBar type='indeterminate' color={"violet"} />
+  }
+
+  if (error) {
+    return <IonGrid>
+      <IonRow className="ion-justify-content-center">
+        <IonText>Terjadi kesalahan : {errorMessage}</IonText>
+      </IonRow>
+    </IonGrid>
+  }
 
   return (
     <PresentContext.Provider value={{ state, dispatch }} >
