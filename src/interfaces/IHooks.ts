@@ -4,3 +4,9 @@ export interface IFetchHook<T> {
     status: number,
     message: string
 }
+
+export type ActivityModel = {
+    doing: string;
+    doing_time: string;
+    note: string;
+}

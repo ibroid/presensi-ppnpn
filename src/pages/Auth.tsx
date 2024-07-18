@@ -1,3 +1,4 @@
+import * as React from "react";
 import {
 	IonButton,
 	IonContent,
@@ -17,6 +18,7 @@ import {
 	IonCol,
 	useIonViewDidEnter,
 	IonLoading,
+	useIonViewWillEnter,
 } from "@ionic/react";
 import { logIn } from "ionicons/icons";
 import { useCallback, useContext, useEffect, useState } from "react";
@@ -89,8 +91,7 @@ const Auth: React.FC = () => {
 	const { isLoading, error, errorMessage, user, token } = useCheckAuth()
 	const router = useIonRouter()
 
-	useEffect(() => {
-
+	const setAuthData = useCallback(() => {
 		if (error) {
 			toast({
 				message: errorMessage,
@@ -103,7 +104,6 @@ const Auth: React.FC = () => {
 			})
 		}
 
-
 		if (!isLoading) {
 			if (user !== null) {
 				dispatch({ type: "SET_USER", payload: user })
@@ -111,8 +111,11 @@ const Auth: React.FC = () => {
 				router.push("/app", "root", "replace")
 			}
 		}
+	}, [dispatch, error, errorMessage, isLoading, router, toast, user, token])
 
-	}, [isLoading, error, toast, errorMessage, user, dispatch, router, token])
+	useEffect(() => {
+		setAuthData();
+	}, [setAuthData])
 
 
 	return (
@@ -181,7 +184,7 @@ const Auth: React.FC = () => {
 						<a rel="noreferrer" target="_blank" href="https://mmaliki.my.id">Visit Developer</a>
 					</p>
 				</IonText>
-				<IonLoading isOpen={ionLoading || isLoading} message="Loading ..." />
+				<IonLoading isOpen={ionLoading} message="Loading ..." />
 			</IonContent>
 		</IonPage >
 

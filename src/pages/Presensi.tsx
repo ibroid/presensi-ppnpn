@@ -24,7 +24,7 @@ import DefaultHeader from '../components/DefaultHeader';
 import MapGL from '../components/MapGL';
 import NoLocation from '../components/NoLocation';
 import FormPresence from '../components/FormPresence';
-import { PresentContext, PresentProvider } from '../context/PresentContext';
+import { PresentProvider } from '../context/PresentContext';
 import usePresensiList from '../hooks/usePresensiList';
 
 

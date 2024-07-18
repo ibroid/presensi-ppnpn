@@ -1,5 +1,5 @@
 import { Preferences } from "@capacitor/preferences";
-import { useCallback, useReducer } from "react";
+import { useCallback, useEffect, useReducer } from "react";
 import { User } from "../context/AuthContext";
 import { httpInstance } from "../utils/HttpClient";
 import { AxiosError } from "axios";
@@ -83,10 +83,10 @@ export default function useCheckAuth() {
     }
   }, [])
 
-  useIonViewDidEnter(() => {
+  useEffect(() => {
     fetchUser()
 
-  }, [])
+  }, [fetchUser])
 
 
   return state;

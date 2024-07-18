@@ -1,9 +1,8 @@
-import { useContext, useEffect, useReducer, useRef } from "react";
+import { useCallback, useEffect, useReducer, useRef } from "react";
 import { Activity } from "../interfaces/IResponse"
 import { httpInstance } from "../utils/HttpClient";
 import { AxiosError } from "axios";
-import { AuthContext } from "../context/AuthContext";
-import { stat } from "fs";
+import { Preferences } from "@capacitor/preferences";
 export type TodayActivityType<T> = {
   activities?: T[] | Activity[];
   loading: boolean;
@@ -42,44 +41,55 @@ const initialState: TodayActivityType<Activity> = {
   errorMessage: ""
 }
 
+
 export default function useTodayActivityListHook() {
+  let AbortControllerRef = useRef<AbortController | null>(null);
+
+  const fetchActivity = useCallback(async () => {
+    const { value } = await Preferences.get({ key: 'token' })
+    if (!value) {
+      dispatch({ type: "FETCH_ERROR", payload: "Token Not Provided" });
+
+      return;
+    }
+
+    try {
+      const response = await httpInstance(value).get("/activity", { signal: AbortControllerRef.current?.signal })
+
+      dispatch({ type: "FETCH_SUCCESS", payload: response.data })
+
+    } catch (error: any) {
+      let errorMessage: string = "Terjadi Kesalahan. ";
+      if (error instanceof AxiosError && error.isAxiosError) {
+        errorMessage += error.response?.data.message ?? error.response?.data.error.message;
+      } else {
+        errorMessage += error.message;
+      }
+
+      dispatch({
+        type: "FETCH_ERROR",
+        payload: errorMessage
+      })
+    }
+
+
+  }, [])
 
   const [prestate, dispatch] = useReducer(reducer<any>, initialState)
-  let AbortControllerRef = useRef<AbortController | null>(null);
+
+  const cancelFetchActivity = () => {
+    AbortControllerRef.current?.abort();
+    AbortControllerRef.current = null;
+  }
 
   useEffect(() => {
     if (AbortControllerRef.current === null) {
       AbortControllerRef.current = new AbortController();
     }
 
-    httpInstance().get("/activity", { signal: AbortControllerRef.current.signal })
-      .then((res) => {
-        dispatch({
-          type: "FETCH_SUCCESS",
-          payload: res.data
-        } as TodayActivityAction<Activity>)
-      })
-      .catch((err: any) => {
-        let errorMessage: string = "Terjadi Kesalahan. "
-        if (err instanceof AxiosError && err.isAxiosError) {
-          errorMessage += err.response?.data.message ?? err.response?.data.error.message;
-        } else {
-          errorMessage += err.message;
-        }
+    fetchActivity()
 
-        dispatch({
-          type: "FETCH_ERROR",
-          payload: errorMessage
-        })
-      })
+  }, [fetchActivity])
 
-    return () => {
-      if (AbortControllerRef.current) {
-        AbortControllerRef.current.abort();
-      }
-    }
-
-  }, [])
-
-  return prestate;
+  return { ...prestate, cancelFetchActivity, fetchActivity };
 }

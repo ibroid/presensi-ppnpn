@@ -1,14 +1,18 @@
-import { IonButton, IonCol, IonGrid, IonIcon, IonProgressBar, IonRow, IonText } from "@ionic/react";
-import { addCircle } from "ionicons/icons";
-import useTodayActivityListHook from "../hooks/useTodayActivityListHook";
+import { IonCol, IonGrid, IonProgressBar, IonRow, IonText } from "@ionic/react";
 import { Activity } from "../interfaces/IResponse";
-import { useContext, useEffect } from "react";
-import { ActivityContext } from "../context/ActivityContext";
-
-export default function ActivityTable() {
 
 
-  const { stateActivity } = useContext(ActivityContext)
+export type ActivityTableProps = {
+  loading: boolean,
+  error: boolean,
+  errorMessage: string,
+  stateActivity: Activity[],
+}
+
+export default function ActivityTable({
+  error, errorMessage, loading, stateActivity
+}: ActivityTableProps
+) {
 
   return (
     <IonGrid>
@@ -26,9 +30,9 @@ export default function ActivityTable() {
         <IonCol>Catatan</IonCol>
       </IonRow>
 
-      {/* {loading && <IonRow><IonProgressBar color={"violet"} type="indeterminate" /></IonRow>}
+      {loading && <IonRow><IonProgressBar color={"violet"} type="indeterminate" /></IonRow>}
       {error && <IonRow className="ion-text-center"><IonText>{errorMessage}</IonText></IonRow>}
-       */}
+
 
       {stateActivity?.map((activity: Activity, i: number) => {
         return (

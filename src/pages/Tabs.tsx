@@ -6,7 +6,7 @@ import {
 	IonLabel,
 	IonTabButton
 } from "@ionic/react";
-import { Redirect, Route } from "react-router";
+import { Redirect, Route, } from "react-router";
 import Presensi from "./Presensi";
 import { listOutline, receiptOutline, barChartOutline, locationOutline } from "ionicons/icons";
 import { useContext } from 'react';
