@@ -184,7 +184,7 @@ const Auth: React.FC = () => {
 						<a rel="noreferrer" target="_blank" href="https://mmaliki.my.id">Visit Developer</a>
 					</p>
 				</IonText>
-				<IonLoading isOpen={ionLoading} message="Loading ..." />
+				<IonLoading isOpen={ionLoading || isLoading} message="Memeriksa User ..." />
 			</IonContent>
 		</IonPage >
 

@@ -36,7 +36,7 @@ export default function ActivityTable({
 
       {stateActivity?.map((activity: Activity, i: number) => {
         return (
-          <IonRow key={activity.id}>
+          <IonRow key={activity.id} style={{ border: "2px solid var(--ion-color-rose)" }}>
             <IonCol className="ion-no-margin" size="auto">{i + 1}</IonCol>
             <IonCol className="ion-no-margin">{activity.doing}</IonCol>
             <IonCol className="ion-no-margin">{activity.doing_time}</IonCol>

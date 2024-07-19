@@ -75,3 +75,19 @@ export type Activity = {
     created_at: Date;
     updated_at: Date;
 }
+export type Monitor = {
+    list: PegawaiWithPresenceToday[];
+    total_sudah: number;
+    total_belum: number;
+}
+
+export type PegawaiWithPresenceToday = {
+    id: number;
+    fullname: string;
+    photos: string;
+    employee_level_id: number;
+    created_at: Date;
+    updated_at: Date | null;
+    masuk: string | null;
+    pulang: string | null;
+}

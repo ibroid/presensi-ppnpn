@@ -3,7 +3,7 @@ import axios, { AxiosInstance } from "axios";
 export const httpInstance = (token?: string | null): AxiosInstance => {
   const axiosInstance = axios.create({
     baseURL: process.env.REACT_APP_URL_API,
-    timeout: 10000,
+    timeout: 15000,
   });
 
   if (token) {

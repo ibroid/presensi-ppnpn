@@ -13,6 +13,8 @@ import { useContext } from 'react';
 import { AuthContext } from '../context/AuthContext';
 import Activity from "./Activity";
 import "../style/tabs.css";
+import Monitoring from "./Monitoring";
+import Laporan from "./Laporan";
 
 const Tabs: React.FC = () => {
 	const { state } = useContext(AuthContext)
@@ -28,6 +30,8 @@ const Tabs: React.FC = () => {
 				</Route>
 				<Route exact path={'/app/presensi'} render={() => <Presensi />} />
 				<Route exact path={'/app/aktivitas'} render={() => <Activity />} />
+				<Route exact path={'/app/monitoring'} render={() => <Monitoring />} />
+				<Route exact path={'/app/laporan'} render={() => <Laporan />} />
 			</IonRouterOutlet>
 
 			<IonTabBar slot="bottom" color={'rose'} className="footerContainer">
@@ -41,7 +45,7 @@ const Tabs: React.FC = () => {
 					<IonLabel>Aktivitas</IonLabel>
 				</IonTabButton>
 
-				<IonTabButton tab="laporan" href="/app/monitoring">
+				<IonTabButton tab="monitoring" href="/app/monitoring">
 					<IonIcon size="small" icon={barChartOutline} />
 					<IonLabel>Monitoring</IonLabel>
 				</IonTabButton>
