@@ -28,7 +28,7 @@ export default function usePresensiList() {
         } catch (err: Error | any) {
             console.log(err)
             if (err instanceof AxiosError && err.isAxiosError) {
-                setErrorMessage(err.response?.data.message ?? err.response?.data.error.message);
+                setErrorMessage(err.message ?? err.response?.data.error.message);
             } else {
                 setErrorMessage(err.message);
             }

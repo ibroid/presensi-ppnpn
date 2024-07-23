@@ -91,3 +91,13 @@ export type PegawaiWithPresenceToday = {
     masuk: string | null;
     pulang: string | null;
 }
+
+export type LaporanResponse = {
+    no: number;
+    tanggal: string;
+    hari: string;
+    masuk: string;
+    pulang: string;
+    total: string;
+    ket: string;
+}

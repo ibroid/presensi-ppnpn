@@ -13,12 +13,9 @@ import {
 	IonToolbar,
 	useIonToast,
 	useIonRouter,
-	useIonLoading,
 	IonImg,
 	IonCol,
-	useIonViewDidEnter,
 	IonLoading,
-	useIonViewWillEnter,
 } from "@ionic/react";
 import { logIn } from "ionicons/icons";
 import { useCallback, useContext, useEffect, useState } from "react";

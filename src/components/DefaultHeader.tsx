@@ -14,7 +14,7 @@ export default function DefaultHeader({ title }: DefaultHeaderProps) {
     <IonHeader class="ion-no-border">
       <IonToolbar color={'rose'} >
         <IonTitle slot="start">{title}</IonTitle>
-        <IonChip slot='end' onClick={() => {
+        <IonChip className="ion-margin-end" slot='end' onClick={() => {
           alert({
             animated: true,
             backdropDismiss: true,

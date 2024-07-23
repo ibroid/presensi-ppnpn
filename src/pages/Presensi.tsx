@@ -5,13 +5,10 @@ import {
   useIonViewDidEnter,
   IonGrid,
   IonRow,
-  IonText,
-  IonProgressBar,
+  IonText
 } from '@ionic/react';
 
 import {
-  useContext,
-  useEffect,
   useState
 } from 'react';
 
@@ -33,7 +30,7 @@ const Presensi: React.FC = () => {
   const [location, setLocation] = useState<Position>();
   const [ionToast] = useIonToast();
 
-  const { error, errorMessage, loading, presensi } = usePresensiList();
+  const { presensi } = usePresensiList();
 
 
   useIonViewDidEnter(() => {
@@ -59,7 +56,7 @@ const Presensi: React.FC = () => {
         {location
           ? <LocationReady location={location} />
           : <NoLocation />}
-        {presensi.map((row: any) => <p key={row.id}>{row.waktu}</p>)}
+        {presensi?.map((row: any) => <p key={row.id}>{row.waktu}</p>)}
       </IonContent>
     </IonPage>
   );
