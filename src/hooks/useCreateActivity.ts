@@ -12,7 +12,7 @@ export type CreateActivityStateType = {
 }
 
 export type CreateActivityActionType = {
-  type: "FETCH_ERROR" | "FETCH_SUCCESS" | "MISSING_TOKEN";
+  type: "FETCH_ERROR" | "FETCH_SUCCESS" | "MISSING_TOKEN" | "FETCHING";
   payload?: any;
 }
 
@@ -39,6 +39,11 @@ const reducer = (state: CreateActivityStateType, action: CreateActivityActionTyp
         postError: false,
         postResponse: action.payload,
       }
+    case "FETCHING":
+      return {
+        ...state,
+        postLoading: true,
+      }
   }
 }
 
@@ -50,6 +55,7 @@ export default function useCreateActivity(callback?: any) {
   })
 
   const createActivity = useCallback(async (data: ActivityModel) => {
+    dispatch({ type: "FETCHING" })
     const { value } = await Preferences.get({ key: 'token' })
 
     if (!value) {
