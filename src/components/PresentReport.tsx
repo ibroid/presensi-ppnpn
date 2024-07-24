@@ -114,7 +114,7 @@ export default function PresentReport() {
       {
         data && data?.length > 0 && <IonRow style={{ backgroundColor: "var(--ion-color-violet)" }}>
           <IonCol>
-            <IonButton download="laporan.docx" shape="round" href={`${process.env.REACT_APP_URL_API}/laporan/download?employee_id=${state.user?.employee.id}&bulan=${selectedMonth + 1}&tahun=${thisYear}`} >
+            <IonButton shape="round" >
               <IonIcon slot="start" icon={download} className="ion-margin-end" />
               Download Laporan</IonButton>
           </IonCol>

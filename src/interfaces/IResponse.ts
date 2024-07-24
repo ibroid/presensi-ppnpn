@@ -103,11 +103,9 @@ export type LaporanResponse = {
 }
 
 export type LaporanActivityResponse = {
-    id: number;
-    doing: string;
-    doing_time: string;
-    note: string;
-    doing_date: string;
-    created_at: Date;
-    updated_at: Date;
+    no: number;
+    hari: string;
+    tanggal: string;
+    keterangan: string | null;
+    kegiatan: Activity[]
 }

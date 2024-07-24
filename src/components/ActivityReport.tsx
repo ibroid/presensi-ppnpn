@@ -1,11 +1,21 @@
-import { IonButton, IonCol, IonGrid, IonIcon, IonProgressBar, IonRow, IonText } from "@ionic/react";
+import {
+  IonButton,
+  IonCol,
+  IonGrid,
+  IonIcon,
+  IonProgressBar,
+  IonRow,
+  IonText
+} from "@ionic/react";
+
 import SelectReportPeriode from "./SelectReportPeriode";
 import { AuthContext } from "../context/AuthContext";
 import { useContext, useMemo, useState } from "react";
 import useFetchActivity from "../hooks/useFetchActivity";
-import { LaporanActivityResponse } from "../interfaces/IResponse";
 import { download } from "ionicons/icons";
-import { CapacitorHttp } from "@capacitor/core"
+import useActivityPdf from "../hooks/useActivtyPdf";
+import useImageToBase64 from "../hooks/useImageToBase64";
+
 export default function ActivityReport() {
   const { state } = useContext(AuthContext)
   const { fetchLaporan, error, errorMessage, loading, data } = useFetchActivity();
@@ -19,6 +29,27 @@ export default function ActivityReport() {
   }, [])
 
   const [selectedMonth, setSelectedMonth] = useState(thisMonth);
+
+  const { exportPdf } = useActivityPdf()
+
+  const { imageBase64 } = useImageToBase64();
+
+  const monthList = useMemo(() => {
+    return [
+      "Januari",
+      "Februari",
+      "Maret",
+      "April",
+      "Mei",
+      "Juni",
+      "Juli",
+      "Agustus",
+      "September",
+      "Oktober",
+      "November",
+      "Desember"
+    ]
+  }, [])
 
   return (
     <IonGrid>
@@ -40,25 +71,40 @@ export default function ActivityReport() {
       </IonRow>
       <IonRow style={{ backgroundColor: "var(--ion-color-amber)" }}>
         <IonCol>Tanggal</IonCol>
-        <IonCol>Waktu</IonCol>
         <IonCol>Kegiatan</IonCol>
-        <IonCol>Ket</IonCol>
       </IonRow>
 
       {loading && <IonRow><IonProgressBar color={"amber"} type="indeterminate" /></IonRow>}
       {error && <IonRow className="ion-text-center"><IonText>{errorMessage}</IonText></IonRow>}
 
-      {data?.daily_activity?.map((activity: LaporanActivityResponse, i: number) => <IonRow style={{ border: "2px solid var(--ion-color-amber)" }} key={activity.id}>
-        <IonCol>{activity.doing_date}</IonCol>
-        <IonCol>{activity.doing_time}</IonCol>
-        <IonCol>{activity.doing}</IonCol>
-        <IonCol>{activity.note}</IonCol>
+      {data && data?.map((ac, i: number) => <IonRow style={{ border: "2px solid var(--ion-color-amber)" }} key={ac.no}>
+        <IonCol>{ac.tanggal}</IonCol>
+        <IonCol>
+          <ol>
+            {
+              ac.kegiatan.length > 0 &&
+              ac?.kegiatan?.map((k, i) => <li key={k.id}>
+                {k.doing} ({k.doing_time})
+              </li>)
+            }
+          </ol>
+        </IonCol>
       </IonRow>)}
 
       {
-        data?.daily_activity && data.daily_activity.length > 0 && <IonRow>
+        data && data.length > 0 && <IonRow>
           <IonCol>
-            <IonButton color={"amber"} href={`${process.env.REACT_APP_URL_API}/laporan/download_activity?employee_id=${state.user?.employee.id}&bulan=${selectedMonth + 1}&tahun=${thisYear}`}>
+            <IonButton color={"amber"} onClick={
+              () => exportPdf(
+                {
+                  data,
+                  foto: imageBase64,
+                  periode: `${monthList[selectedMonth]} ${thisYear}`,
+                  jabatan: state.user?.employee?.employee_level.level_name,
+                  nama: state.user?.name
+                }
+              )
+            }>
               <IonIcon icon={download} slot="start" className="ion-margin-end" color="dark" />
               Download Laporan
             </IonButton>
@@ -67,7 +113,7 @@ export default function ActivityReport() {
       }
 
       {
-        data?.daily_activity?.length === 0 && <IonRow className="ion-text-center"><IonText>Data Tidak Ditemukan</IonText></IonRow>
+        data?.length === 0 && <IonRow className="ion-text-center"><IonText>Data Tidak Ditemukan</IonText></IonRow>
       }
     </IonGrid>
   )

@@ -13,14 +13,14 @@ export type FetchLaporanStateType = {
   loading: boolean,
   error: boolean,
   errorMessage: string,
-  data?: any
+  data?: LaporanActivityResponse[]
 }
 
 export type FetchLaporanActionType = {
   type: "FETCH_ERROR" | "FETCH_SUCCESS" | "FETCHING",
   payload: {
     errorMessage?: string
-    data?: any
+    data?: LaporanActivityResponse[]
   }
 }
 
@@ -44,7 +44,6 @@ function reducer(state: FetchLaporanStateType, action: FetchLaporanActionType): 
       return {
         ...state,
         loading: true,
-        data: []
       }
   }
 }
@@ -53,7 +52,6 @@ const initialState: FetchLaporanStateType = {
   loading: true,
   error: false,
   errorMessage: "",
-  data: []
 }
 
 export default function useFetchActivity() {

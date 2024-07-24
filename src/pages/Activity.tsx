@@ -1,18 +1,20 @@
-import { IonButton, IonCol, IonContent, IonGrid, IonHeader, IonIcon, IonInput, IonItem, IonLabel, IonList, IonListHeader, IonPage, IonProgressBar, IonRow, IonSelect, IonSelectOption, IonText, IonTextarea, IonTitle, IonToolbar, useIonToast, useIonViewDidEnter, useIonViewWillLeave } from "@ionic/react";
-import { checkbox, create, bodyOutline, time, document, addCircle } from "ionicons/icons";
-import { useForm } from "react-hook-form";
-import { httpInstance } from "../utils/HttpClient";
-import { AuthContext } from "../context/AuthContext";
-import { useContext, useState } from "react";
-import { AxiosError } from "axios";
-import { Activity } from "../interfaces/IResponse";
+import {
+  IonButton,
+  IonCol,
+  IonContent,
+  IonGrid,
+  IonIcon,
+  IonPage,
+  IonRow,
+  IonText
+} from "@ionic/react";
+
+import { addCircle } from "ionicons/icons";
+import { useState } from "react";
 import DefaultHeader from "../components/DefaultHeader";
 import ActivityTable from "../components/ActivityTable";
-import { ActivityProvider } from "../context/ActivityContext";
 import useTodayActivityListHook from "../hooks/useTodayActivityListHook";
 import ModalActivity from "../components/ModalActivity";
-
-
 
 export default function Activities() {
 
@@ -43,8 +45,8 @@ export default function Activities() {
           isOpen={showModal}
           close={() => setShowModal(false)}
           saveCallback={() => {
-            fetchActivity()
             setShowModal(false)
+            fetchActivity()
           }}
         />
       </IonContent>

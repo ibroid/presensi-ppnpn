@@ -1,9 +1,5 @@
-import { IonButton, IonCol, IonGrid, IonIcon, IonInput, IonLoading, IonModal, IonRow, IonSelect, IonSelectOption, IonText, IonTextarea, IonToast, useIonLoading, useIonToast } from "@ionic/react";
-import { useCallback, useState } from "react";
-import { Activity } from "../interfaces/IResponse";
+import { IonButton, IonCol, IonGrid, IonIcon, IonInput, IonLoading, IonModal, IonRow, IonSelect, IonSelectOption, IonText, IonTextarea, IonToast } from "@ionic/react";
 import { useForm } from "react-hook-form";
-import { httpInstance } from "../utils/HttpClient";
-import { AxiosError } from "axios";
 import { closeSharp } from "ionicons/icons";
 import { ActivityModel } from "../interfaces/IHooks";
 import useCreateActivity from "../hooks/useCreateActivity";
