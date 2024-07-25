@@ -4,7 +4,9 @@ import { AuthContext } from "../context/AuthContext"
 import SelectReportPeriode from "./SelectReportPeriode"
 import useFetchLaporan from "../hooks/useFetchLaporan"
 import { differenceInMinutes, parse } from "date-fns"
-import { download } from "ionicons/icons"
+import { download, image } from "ionicons/icons"
+import usePresensiPdf from "../hooks/usePresensiPdf"
+import useImageToBase64 from "../hooks/useImageToBase64"
 export default function PresentReport() {
 
   const { state } = useContext(AuthContext)
@@ -41,7 +43,24 @@ export default function PresentReport() {
     return `${totalHours} jam ${totalMinutes} menit`
   }, [data])
 
+  const { imageBase64 } = useImageToBase64();
 
+  const monthList = useMemo(() => {
+    return [
+      "Januari",
+      "Februari",
+      "Maret",
+      "April",
+      "Mei",
+      "Juni",
+      "Juli",
+      "Agustus",
+      "September",
+      "Oktober",
+      "November",
+      "Desember"
+    ]
+  }, [])
 
   const sliceTime = useCallback((time: string): string | null => {
     if (!time) return null;
@@ -51,6 +70,8 @@ export default function PresentReport() {
     }
     return time.slice(0, 5);
   }, [])
+
+  const { exportPdf } = usePresensiPdf()
 
 
   return (
@@ -114,8 +135,21 @@ export default function PresentReport() {
       {
         data && data?.length > 0 && <IonRow style={{ backgroundColor: "var(--ion-color-violet)" }}>
           <IonCol>
-            <IonButton shape="round" >
-              <IonIcon slot="start" icon={download} className="ion-margin-end" />
+            <IonButton
+              shape="round"
+              onClick={() => exportPdf(
+                {
+                  data,
+                  periode: `${monthList[selectedMonth]} ${thisYear}`,
+                  foto: imageBase64,
+                  jabatan: state.user?.employee.employee_level.level_name,
+                  nama: state.user?.name
+                })}>
+              <IonIcon
+                slot="start"
+                icon={download}
+                className="ion-margin-end"
+              />
               Download Laporan</IonButton>
           </IonCol>
         </IonRow>
