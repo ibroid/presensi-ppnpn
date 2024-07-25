@@ -1,4 +1,4 @@
-import { IonCol, IonContent, IonGrid, IonPage, IonProgressBar, IonRefresher, IonRefresherContent, IonRow, IonSpinner, IonText, RefresherEventDetail } from "@ionic/react";
+import { IonCol, IonContent, IonGrid, IonPage, IonProgressBar, IonRefresher, IonRefresherContent, IonRow, IonText, RefresherEventDetail } from "@ionic/react";
 import DefaultHeader from "../components/DefaultHeader";
 import { useMemo } from "react";
 import useMonitoringList from "../hooks/useMonitoringList";
@@ -55,12 +55,17 @@ export default function Monitoring() {
           </IonRow>
           {isLoading && <IonRow><IonProgressBar color={"violet"} type="indeterminate" /></IonRow>}
           {error && <IonRow className="ion-text-center"><IonText>{errorMessage}</IonText></IonRow>}
-          {data?.list?.map((monitor: PegawaiWithPresenceToday, i: number) => <IonRow key={monitor.id} style={{ border: "2px solid var(--ion-color-rose)" }}>
-            <IonCol size="auto">{i + 1}.</IonCol>
-            <IonCol className="ion-text-start">{monitor.fullname}</IonCol>
-            <IonCol size="auto" className="ion-text-center">{monitor?.masuk ?? "00:00"}</IonCol>
-            <IonCol size="auto" className="ion-text-center">{monitor?.pulang ?? "00:00"}</IonCol>
-          </IonRow>)}
+
+          {data?.list?.map((monitor: PegawaiWithPresenceToday, i: number) =>
+            <IonRow key={monitor.id} style={{
+              border: "2px solid var(--ion-color-violet)",
+              backgroundColor: (monitor.masuk) ? "var(--ion-color-lime)" : "var(--ion-color-danger)"
+            }}>
+              <IonCol size="auto">{i + 1}.</IonCol>
+              <IonCol className="ion-text-start">{monitor.fullname}</IonCol>
+              <IonCol size="auto" className="ion-text-center">{monitor?.masuk ?? "00:00"}</IonCol>
+              <IonCol size="auto" className="ion-text-center">{monitor?.pulang ?? "00:00"}</IonCol>
+            </IonRow>)}
         </IonGrid>
       </IonContent>
     </IonPage>
