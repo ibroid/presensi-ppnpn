@@ -14,7 +14,7 @@ export default function DefaultHeader({ title }: DefaultHeaderProps) {
     <IonHeader class="ion-no-border">
       <IonToolbar color={'rose'} >
         <IonTitle slot="start">{title}</IonTitle>
-        <IonChip className="ion-margin-end" slot='end' onClick={() => {
+        {state.token && <IonChip className="ion-margin-end" slot='end' onClick={() => {
           alert({
             animated: true,
             backdropDismiss: true,
@@ -40,7 +40,8 @@ export default function DefaultHeader({ title }: DefaultHeaderProps) {
             <img alt="Employee avatar" src={state.user?.employee?.photos} />
           </IonAvatar>
           <IonLabel color={"light"}>Logout</IonLabel>
-        </IonChip>
+        </IonChip>}
+
       </IonToolbar>
     </IonHeader>
   )

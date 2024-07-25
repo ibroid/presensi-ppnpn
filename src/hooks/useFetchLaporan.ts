@@ -6,7 +6,8 @@ import { LaporanResponse } from "../interfaces/IResponse";
 
 export type FetchLaporanParamType = {
   bulan?: number,
-  tahun?: number
+  tahun?: number,
+  employee_id?: number
 }
 
 export type FetchLaporanStateType = {
@@ -50,13 +51,13 @@ function reducer(state: FetchLaporanStateType, action: FetchLaporanActionType): 
 }
 
 const initialState: FetchLaporanStateType = {
-  loading: true,
+  loading: false,
   error: false,
   errorMessage: "",
   data: []
 }
 
-export default function useFetchLaporan() {
+export default function useFetchLaporan(manual?: boolean) {
 
   const [state, dispatch] = useReducer(reducer, initialState);
   const controller = useRef<AbortController | null>(null);
@@ -73,7 +74,7 @@ export default function useFetchLaporan() {
     return year;
   }, []);
 
-  const fetchLaporan = useCallback(async ({ bulan, tahun }: FetchLaporanParamType) => {
+  const fetchLaporan = useCallback(async ({ bulan, tahun, employee_id }: FetchLaporanParamType) => {
     dispatch({ type: "FETCHING", payload: {} });
 
     const { value } = await Preferences.get({ key: 'token' });
@@ -82,10 +83,16 @@ export default function useFetchLaporan() {
     }
 
     try {
-      const res = await httpInstance(value).post('/laporan/periode', {
-        bulan: bulan,
-        tahun: tahun,
-      }, {
+      let body = employee_id ? {
+        bulan,
+        tahun,
+        employee_id
+      } : {
+        bulan,
+        tahun
+      }
+
+      const res = await httpInstance(value).post('/laporan/periode', body, {
         signal: controller.current?.signal
       });
       dispatch({ type: "FETCH_SUCCESS", payload: { data: res.data } });
@@ -105,12 +112,14 @@ export default function useFetchLaporan() {
   useEffect(() => {
     controller.current = new AbortController();
 
-    fetchLaporan({ bulan: getCurrentMonth, tahun: getCurrentYear });
+    if (!manual) {
+      fetchLaporan({ bulan: getCurrentMonth, tahun: getCurrentYear });
+    }
 
     return () => {
       cancelFetchLaporan()
     }
-  }, [fetchLaporan, getCurrentMonth, getCurrentYear]);
+  }, [fetchLaporan, getCurrentMonth, getCurrentYear, manual]);
 
   return { fetchLaporan, ...state, cancelFetchLaporan };
 }
