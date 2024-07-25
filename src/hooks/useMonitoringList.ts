@@ -16,11 +16,14 @@ export type MonitoringActionType = {
   payload?: MonitoringStateType | any | string;
 }
 
-function reducer(state: MonitoringStateType, action: MonitoringActionType) {
+function reducer(state: MonitoringStateType, action: MonitoringActionType): MonitoringStateType {
   switch (action.type) {
     case "FETCH_ERROR":
       return {
-        ...state,
+        data: {
+          ...state.data,
+          list: []
+        },
         isLoading: false,
         error: true,
         errorMessage: action.payload

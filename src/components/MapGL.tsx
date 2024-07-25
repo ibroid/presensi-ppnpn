@@ -35,11 +35,7 @@ export default function MapGL({ latitude, longitude }: MapGLProps) {
         anchor="center"
         latitude={latitude}
         longitude={longitude}
-        draggable={true}
         offset={[10 * viewport.zoom, -25 * viewport.zoom]}
-        onDragEnd={(e: any) => {
-          console.log(e)
-        }}
       >
       </Marker>
     </Map>
