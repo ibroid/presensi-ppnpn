@@ -24,8 +24,8 @@ export default function ModalActivity({ isOpen, close, saveCallback }: ModalActi
     <IonModal
       backdropDismiss={false}
       isOpen={isOpen}
-      style={{ "--height": "50%", "--width": "80%" }}>
-      <IonGrid className="ion-no-padding ion-no-margin">
+      style={{ "--height": "50%", "--width": "80%", }}>
+      <IonGrid className="ion-no-padding ion-no-margin" style={{ overflow: "auto" }}>
         <IonRow>
           <IonCol className="ion-text-center">
             <IonText>Form Isian Aktivitas</IonText>
@@ -36,7 +36,7 @@ export default function ModalActivity({ isOpen, close, saveCallback }: ModalActi
             </IonButton>
           </IonCol>
         </IonRow>
-        <IonRow className="ion-margin ion-padding justify-content-center align-items-center">
+        <IonRow className="ion-padding justify-content-center align-items-center">
           <IonCol>
             <form onSubmit={handleSubmit(createActivity)} style={{ alignItems: "center" }}>
               <IonSelect

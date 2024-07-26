@@ -3,7 +3,6 @@ import { useCallback, useEffect, useReducer } from "react";
 import { User } from "../context/AuthContext";
 import { httpInstance } from "../utils/HttpClient";
 import { AxiosError } from "axios";
-import { useIonViewDidEnter } from "@ionic/react";
 
 export type CheckAuthStateType = {
   user: User | null;
@@ -14,7 +13,7 @@ export type CheckAuthStateType = {
 }
 
 export type CheckAuthActionType = {
-  type: "FETCH_ERROR" | "FETCH_SUCCESS" | "MISSING_TOKEN" | "SET_TOKEN";
+  type: "FETCH_ERROR" | "FETCH_SUCCESS" | "MISSING_TOKEN" | "SET_TOKEN" | "FETCHING";
   payload?: any;
 }
 
@@ -49,6 +48,12 @@ function reducer(state: CheckAuthStateType, action: CheckAuthActionType) {
         ...state,
         token: action.payload
       }
+
+    case "FETCHING":
+      return {
+        ...state,
+        isLoading: true
+      }
   }
 }
 
@@ -56,13 +61,14 @@ export default function useCheckAuth() {
 
   const [state, dispatch] = useReducer(reducer, {
     user: null,
-    isLoading: true,
+    isLoading: false,
     error: false,
     errorMessage: "",
     token: null
   } as CheckAuthStateType)
 
   const fetchUser = useCallback(async () => {
+    dispatch({ type: "FETCHING" })
     const { value } = await Preferences.get({ key: 'token' })
 
     if (!value) {
