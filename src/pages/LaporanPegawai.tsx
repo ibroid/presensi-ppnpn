@@ -183,9 +183,7 @@ export function PresentReport({ pegawai }: any) {
         <IonCol>Ket</IonCol>
       </IonRow>}
 
-      {data?.filter((v) => {
-        return v.hari !== "Sabtu" && v.hari !== "Minggu"
-      }).map((item) => {
+      {data?.map((item) => {
         return {
           ...item,
           masuk: sliceTime(item.masuk),

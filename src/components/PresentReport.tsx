@@ -107,9 +107,7 @@ export default function PresentReport() {
       {error && <IonRow style={{ backgroundColor: "var(--ion-color-rose)" }} className="ion-text-center"><IonText>{errorMessage}</IonText></IonRow>}
 
       {/* Data */}
-      {data?.filter((v) => {
-        return v.hari !== "Sabtu" && v.hari !== "Minggu"
-      }).map((item) => {
+      {data?.map((item) => {
         return {
           ...item,
           masuk: sliceTime(item.masuk),
