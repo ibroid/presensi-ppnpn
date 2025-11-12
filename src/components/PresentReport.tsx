@@ -4,7 +4,7 @@ import { AuthContext } from "../context/AuthContext"
 import SelectReportPeriode from "./SelectReportPeriode"
 import useFetchLaporan from "../hooks/useFetchLaporan"
 import { differenceInMinutes, parse } from "date-fns"
-import { download, image } from "ionicons/icons"
+import { download } from "ionicons/icons"
 import usePresensiPdf from "../hooks/usePresensiPdf"
 import useImageToBase64 from "../hooks/useImageToBase64"
 export default function PresentReport() {
